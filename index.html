@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Fiche Équipe Ultimate</title>
+<style>
+  :root{
+    --bg:#f4f6f3; --card:#ffffff; --ink:#1d2a24; --muted:#5d6b64; --line:#dfe5e1;
+    --accent:#1f8a5b; --accent-soft:#e3f3ea; --warn:#d9822b; --warn-soft:#fbeedd;
+    --before:#2f6fb5; --during:#1f8a5b; --after:#8a4fb5;
+    --l1:#c94a3c; --l2:#e3a33a; --l3:#5aae6e; --l4:#1f8a5b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141a17; --card:#1d2622; --ink:#e8efe9; --muted:#9aa9a1; --line:#2e3a34;
+      --accent:#3fbf84; --accent-soft:#1f3a2d; --warn-soft:#3a2c1a;
+      --before:#5b9be0; --during:#3fbf84; --after:#b07fe0;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:920px;margin:0 auto;padding:16px 16px 110px}
+  header{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
+  .disc{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,var(--accent) 19% 100%);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15);flex:none}
+  h1{font-size:1.4rem;margin:0}
+  header p{margin:2px 0 0;color:var(--muted);font-size:.93rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+  .card h2{margin:0 0 4px;font-size:1.12rem}
+  .hint{color:var(--muted);font-size:.92rem;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+  label.f{display:block;font-size:.85rem;color:var(--muted);font-weight:600}
+  input[type=text],input[type=date],select{width:100%;margin-top:4px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+  .row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+  .row > label{flex:1;min-width:180px}
+  .btn{padding:12px 16px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;background:var(--line);color:var(--ink)}
+  .btn.pri{background:var(--accent);color:#fff}
+  .btn.small{padding:8px 12px;font-size:.88rem}
+  /* phases */
+  .phase{display:flex;align-items:center;gap:12px;margin:26px 0 12px}
+  .phase .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:1.2rem;flex:none}
+  .phase h3{margin:0;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em}
+  .phase small{display:block;color:var(--muted);font-size:.85rem;text-transform:none;letter-spacing:0;font-weight:400}
+  .phase::after{content:"";flex:1;height:2px;background:var(--line)}
+  .p-before .ico{background:var(--before)} .p-before h3{color:var(--before)}
+  .p-during .ico{background:var(--during)} .p-during h3{color:var(--during)}
+  .p-after  .ico{background:var(--after)}  .p-after  h3{color:var(--after)}
+  .card.b-before{border-left:5px solid var(--before)}
+  .card.b-during{border-left:5px solid var(--during)}
+  .card.b-after{border-left:5px solid var(--after)}
+  /* onglets */
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 2px;margin-bottom:4px;position:sticky;top:0;background:var(--bg);z-index:4}
+  .tab{flex:none;padding:12px 18px;border-radius:12px 12px 0 0;border:1px solid var(--line);border-bottom:0;background:var(--line);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;position:relative}
+  .tab.on{background:var(--card);color:var(--accent)}
+  .tab .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;vertical-align:middle}
+  .tab.add{background:transparent;border-style:dashed;color:var(--accent)}
+  .tab.syn{margin-left:auto}
+  /* ordre des matchs */
+  .sched{border-radius:0 16px 16px 16px}
+  .sched summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:1.05rem}
+  .sched summary::-webkit-details-marker{display:none}
+  .sched summary::after{content:"▾";color:var(--muted);font-size:1.2rem}
+  .sched:not([open]) summary::after{content:"▸"}
+  .game{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;margin-top:8px;border:1px solid var(--line)}
+  .game .num{font-weight:800;min-width:74px;color:var(--muted)}
+  .game .vs{flex:1}
+  .game .vs small{display:block;color:var(--muted);font-size:.85rem}
+  .game.mine{border:2px solid var(--accent);background:var(--accent-soft);cursor:pointer}
+  .game.mine .num{color:var(--accent)}
+  .game .go{font-size:.8rem;font-weight:700;color:var(--accent);white-space:nowrap}
+  /* joueurs */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{display:flex;align-items:center;gap:6px;background:var(--accent-soft);padding:6px 6px 6px 12px;border-radius:99px;font-weight:600}
+  .chip button{border:0;background:var(--card);color:var(--muted);width:26px;height:26px;border-radius:50%;cursor:pointer;font-weight:700}
+  .pres{display:flex;flex-wrap:wrap;gap:8px}
+  .pres button{padding:10px 14px;border-radius:99px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+  .pres button.abs{border-color:var(--line);background:var(--bg);color:var(--muted);text-decoration:line-through}
+  /* touches */
+  .touch{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .tp{position:relative;border:2px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;user-select:none;background:var(--bg);transition:transform .08s}
+  .tp:active{transform:scale(.96)}
+  .tp b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tp .n{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums}
+  .tp.low{border-color:var(--warn);background:var(--warn-soft)}
+  .tp.ok{border-color:var(--accent);background:var(--accent-soft)}
+  .tp .m{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-weight:800;cursor:pointer}
+  .info{margin-top:10px;font-size:.92rem;color:var(--muted)}
+  /* compteurs */
+  .counter{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .counter:first-child{border-top:0}
+  .counter .txt{flex:1}
+  .counter .txt b{display:block}
+  .counter .txt small{color:var(--muted)}
+  .counter.vig .txt b{color:var(--warn)}
+  .cbtn{width:54px;height:54px;border-radius:14px;border:0;font-size:1.6rem;font-weight:700;cursor:pointer;flex:none}
+  .minus{background:var(--line);color:var(--ink)}
+  .plus{background:var(--accent);color:#fff}
+  .vig .plus{background:var(--warn)}
+  .cbtn:active{transform:scale(.94)}
+  .val{min-width:44px;text-align:center;font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
+  .mini{display:flex;align-items:center;gap:10px;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:.9rem;color:var(--muted)}
+  .mini .cbtn{width:40px;height:40px;font-size:1.2rem}
+  /* échelles */
+  .crit{padding:12px 0;border-top:1px solid var(--line)}
+  .crit:first-child{border-top:0}
+  .crit b{display:block}
+  .crit small{color:var(--muted);display:block;margin-bottom:8px}
+  .scale{display:grid;gap:6px}
+  .s5{grid-template-columns:repeat(5,1fr)} .s3{grid-template-columns:repeat(3,1fr)}
+  .scale button{padding:10px 4px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer;line-height:1.2}
+  .scale button strong{display:block;font-size:1.15rem}
+  .scale button.on{border-color:var(--after);background:var(--after);color:#fff}
+  /* bilan */
+  .bars{display:grid;gap:12px}
+  .bar .top{display:flex;justify-content:space-between;font-weight:600;font-size:.95rem;gap:8px}
+  .track{height:14px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
+  .fill{height:100%;border-radius:99px;transition:width .3s,background .3s}
+  .level{margin-top:16px;padding:14px;border-radius:12px;text-align:center;font-weight:700;font-size:1.1rem;color:#fff}
+  .note{font-size:.85rem;color:var(--muted);margin-top:10px}
+  /* synthèse */
+  .tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .tbl th{color:var(--muted);font-weight:600}
+  .lv{display:inline-block;padding:3px 9px;border-radius:99px;color:#fff;font-size:.8rem;font-weight:700}
+  .scroll{overflow-x:auto}
+  .actions{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;z-index:5}
+  .saveflag{align-self:center;font-size:.85rem;color:var(--muted)}
+  .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+  .toast.show{opacity:1}
+  @media print{.actions,.toast,.cbtn,.tp .m,.tabs,.btn,.chip button{display:none!important} body{background:#fff} .card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="disc" aria-hidden="true"></div>
+  <div>
+    <h1>Ultimate 5e · Fiche d'équipe</h1>
+    <p>Jeu collectif, esprit du jeu, entraide : on évalue l'équipe ensemble, pas le score.</p>
+  </div>
+</header>
+
+<!-- ÉQUIPE (une seule fois, avant le 1er match) -->
+<div class="phase p-before"><span class="ico">①</span><h3>Avant le 1er match<small>Une seule fois : l'équipe et ses joueurs</small></h3></div>
+<section class="card b-before">
+  <div class="row">
+    <label class="f">Équipe suivie sur cette tablette<select id="teamSel"></select></label>
+    <button class="btn small" id="newTeam">+ Nouvelle équipe</button>
+    <button class="btn small" id="delTeam">Supprimer l'équipe</button>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <label class="f">Nom / couleur de l'équipe<input type="text" id="tNom" placeholder="Les Bleus"></label>
+    <label class="f">Classe<input type="text" id="tClasse" placeholder="5e…"></label>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <label class="f">Ajouter un joueur<input type="text" id="newPlayer" placeholder="Prénom" enterkeyhint="done"></label>
+    <button class="btn pri" id="addPlayer">Ajouter</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</section>
+
+<!-- ONGLETS -->
+<nav class="tabs" id="tabs"></nav>
+
+<details class="card sched" id="schedBox" open>
+  <summary><span><b>Ordre des matchs</b> <span class="hint" id="schedSub" style="margin:0"></span></span></summary>
+  <div id="sched"></div>
+</details>
+
+<div id="matchView">
+  <div class="phase p-before"><span class="ico">②</span><h3>Avant le match<small>Les observateurs préparent la fiche</small></h3></div>
+  <section class="card b-before">
+    <div class="grid">
+      <label class="f">Date<input type="date" id="mDate"></label>
+      <label class="f">Équipe adverse<input type="text" id="mAdv"></label>
+      <label class="f">Observateurs<input type="text" id="mObs" placeholder="Prénoms"></label>
+    </div>
+    <p class="hint" style="margin:14px 0 8px">Qui joue aujourd'hui ? Touche un prénom pour marquer un absent.</p>
+    <div class="pres" id="pres"></div>
+  </section>
+
+  <div class="phase p-during"><span class="ico">③</span><h3>Pendant le match<small>Les observateurs appuient à chaque action vue</small></h3></div>
+  <section class="card b-during">
+    <h2>1 · Tout le monde joue ?</h2>
+    <p class="hint">Touche le prénom du joueur <b>chaque fois qu'il reçoit le disque</b>. Le bouton − corrige une erreur.</p>
+    <div class="touch" id="touch"></div>
+    <div class="info" id="touchInfo"></div>
+  </section>
+  <section class="card b-during">
+    <h2>2 · Le jeu collectif</h2>
+    <p class="hint">Une action collective qui échoue compte autant qu'une action qui réussit !</p>
+    <div id="counters"></div>
+    <div class="mini" style="margin-top:10px">
+      <span style="flex:1">Points marqués <i>(pour info, ne compte pas dans le bilan)</i></span>
+      <button class="cbtn minus" data-pts="-1" aria-label="moins">−</button>
+      <span class="val" id="pts" style="font-size:1.2rem">0</span>
+      <button class="cbtn plus" data-pts="1" aria-label="plus">+</button>
+    </div>
+  </section>
+
+  <div class="phase p-after"><span class="ico">④</span><h3>Après le match<small>Les observateurs complètent, puis lisent le bilan à l'équipe</small></h3></div>
+  <section class="card b-after">
+    <h2>3 · L'esprit du jeu de l'équipe</h2>
+    <p class="hint">En ultimate, il n'y a pas d'arbitre : les joueurs font respecter les règles eux-mêmes. 0 = pas du tout · 4 = excellent.</p>
+    <div id="spirit"></div>
+  </section>
+  <section class="card b-after">
+    <h2>4 · L'entraide dans l'équipe</h2>
+    <p class="hint">À quelle fréquence l'avez-vous vu ?</p>
+    <div id="entraide"></div>
+  </section>
+  <section class="card b-after">
+    <h2>Bilan du match</h2>
+    <div class="bars" id="bars"></div>
+    <div class="level" id="level"></div>
+    <p class="note">Calcul : jeu collectif 40 % (participation de tous + actions collectives) · esprit du jeu 40 % · entraide 20 %. Le même bilan vaut pour chaque joueur présent.</p>
+    <button class="btn small" id="delMatch" style="margin-top:8px">Effacer ce match</button>
+  </section>
+</div>
+
+<div id="synView" hidden>
+  <section class="card">
+    <h2>Synthèse de l'équipe <span id="synTeam"></span></h2>
+    <p class="hint">L'évolution de l'équipe match après match.</p>
+    <div class="scroll"><table class="tbl" id="synTable"></table></div>
+  </section>
+  <section class="card">
+    <h2>Touches de disque par joueur</h2>
+    <p class="hint">Pour vérifier que chacun est intégré au jeu (abs = absent).</p>
+    <div class="scroll"><table class="tbl" id="synPlayers"></table></div>
+  </section>
+</div>
+
+</div>
+
+<div class="actions">
+  <span class="saveflag">✔ Sauvegarde automatique sur la tablette</span>
+  <button class="btn" id="btnCsv">Exporter (CSV)</button>
+  <button class="btn" id="btnPrint">Imprimer / PDF</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== RÉGLAGES PROFESSEUR (modifiables) ===== */
+const CONFIG = {
+  poids: { collectif: 40, esprit: 40, entraide: 20 },
+  touchesMini: 3,
+  nbMatchsDepart: 4,
+  compteurs: [
+    { id:"collectif", titre:"Action collective (disque passé par 3 joueurs ou +)", aide:"Réussie ou non, elle compte !", seuils:[2,4,7] },
+    { id:"sequence",  titre:"Longue séquence (5 passes ou + sans perte)", aide:"L'équipe garde le disque en le faisant circuler", seuils:[1,2,4] },
+    { id:"soutien",   titre:"Un joueur vient aider le porteur bloqué", aide:"Il se rapproche pour proposer une passe courte", seuils:[2,4,7] },
+    { id:"exclusif",  titre:"Vigilance : jeu à 2 seulement", aide:"Deux joueurs jouent entre eux et oublient les autres", seuils:[1,2,4], inverse:true }
+  ],
+  esprit: [
+    { id:"regles",   titre:"Connaissance et respect des règles", aide:"Pas de marcher avec le disque, compte des 10 s, sorties…" },
+    { id:"contact",  titre:"Pas de contact, pas de faute volontaire", aide:"On joue le disque, pas l'adversaire" },
+    { id:"honnete",  titre:"Fair-play et honnêteté", aide:"L'équipe annonce ses propres fautes et accepte les appels" },
+    { id:"attitude", titre:"Attitude positive et maîtrise de soi", aide:"L'équipe reste calme, même quand elle perd" },
+    { id:"comm",     titre:"Communication respectueuse", aide:"Les litiges se règlent en discutant calmement" }
+  ],
+  entraide: [
+    "On encourage un coéquipier après une erreur",
+    "On donne le disque à celui qui l'a peu touché",
+    "On explique une règle ou un placement à un camarade",
+    "On félicite l'équipe adverse pour une belle action",
+    "On organise l'équipe ensemble (placements, tactique)"
+  ]
+};
+const NIVEAUX = [
+  { min:0,  nom:"Maîtrise insuffisante", c:"var(--l1)" },
+  { min:40, nom:"Maîtrise fragile",       c:"var(--l2)" },
+  { min:60, nom:"Maîtrise satisfaisante", c:"var(--l3)" },
+  { min:80, nom:"Très bonne maîtrise",    c:"var(--l4)" }
+];
+const FREQ = ["Jamais","Parfois","Souvent"];
+const KEY = "ultimate_equipes_v2";
+
+/* ===== DONNÉES ===== */
+const today = () => new Date().toISOString().slice(0,10);
+const newMatch = () => ({ date:"", adv:"", obs:"", absents:[], touches:{},
+  cpt:Object.fromEntries(CONFIG.compteurs.map(c=>[c.id,0])), esprit:{}, entraide:{}, pts:0 });
+const newTeam = () => ({ id:Date.now().toString(36), nom:"", classe:"", joueurs:[],
+  matchs:Array.from({length:CONFIG.nbMatchsDepart},newMatch) });
+
+function load(){ try{ const v=localStorage.getItem(KEY); return v?JSON.parse(v):null }catch(e){ return null } }
+let D = load() || { teams:[newTeam()], cur:0, tab:0 };
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(D)) }catch(e){ toast("⚠ Sauvegarde impossible sur cet appareil") } }
+
+const T = () => D.teams[D.cur];
+const M = () => T().matchs[D.tab];
+const $ = id => document.getElementById(id);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),1800) }
+function buzz(){ try{ navigator.vibrate && navigator.vibrate(15) }catch(e){} }
+
+/* ===== CALCULS ===== */
+function n4(v,seuils,inv){ let n=1; seuils.forEach(s=>{ if(v>=s) n++ }); return inv?5-n:n }
+const presents = (t,m) => t.joueurs.filter(p=>!m.absents.includes(p));
+function participation(t,m){
+  const j=presents(t,m); if(!j.length) return {pct:0,ok:0,total:0};
+  const ok=j.filter(p=>(m.touches[p]||0)>=CONFIG.touchesMini).length;
+  return {pct:ok/j.length*100,ok,total:j.length};
+}
+function started(m){
+  return Object.values(m.touches).some(v=>v>0) || Object.values(m.cpt).some(v=>v>0) ||
+         Object.keys(m.esprit).length || Object.keys(m.entraide).length;
+}
+function complete(m){ return Object.keys(m.esprit).length===CONFIG.esprit.length && Object.keys(m.entraide).length===CONFIG.entraide.length }
+function scores(t,m){
+  const part=participation(t,m);
+  const pn = part.pct>=100?4 : part.pct>=75?3 : part.pct>=50?2 : 1;
+  const notes=[pn,...CONFIG.compteurs.map(c=>n4(m.cpt[c.id],c.seuils,c.inverse))];
+  const collectif=notes.reduce((a,b)=>a+b,0)/(notes.length*4)*100;
+  const esprit=Object.values(m.esprit).reduce((a,b)=>a+b,0)/(CONFIG.esprit.length*4)*100;
+  const entraide=Object.values(m.entraide).reduce((a,b)=>a+b,0)/(CONFIG.entraide.length*2)*100;
+  const p=CONFIG.poids, tot=p.collectif+p.esprit+p.entraide;
+  return {collectif,esprit,entraide,participation:part.pct,global:(collectif*p.collectif+esprit*p.esprit+entraide*p.entraide)/tot};
+}
+const niv = p => [...NIVEAUX].reverse().find(n=>p>=n.min);
+
+/* ===== ORDRE DES MATCHS (toutes les équipes de la même classe se rencontrent) ===== */
+const tName = x => x.nom.trim() || "Équipe sans nom";
+function classTeams(){
+  const c=T().classe.trim().toLowerCase();
+  return D.teams.filter(x=>x.classe.trim().toLowerCase()===c);
+}
+function schedule(){
+  const teams=classTeams(); if(teams.length<2) return [];
+  const arr=teams.slice(); if(arr.length%2) arr.push(null);
+  const N=arr.length;
+  let pos=[arr[0],...arr.slice(2),arr[1]];          // 1er match : équipe 1 contre équipe 2
+  let list=[];
+  for(let r=0;r<N-1;r++){
+    for(let i=0;i<N/2;i++){ const a=pos[i], b=pos[N-1-i]; if(a&&b) list.push([a,b]) }
+    pos=[pos[0],pos[N-1],...pos.slice(1,N-1)];
+  }
+  // évite qu'une équipe joue deux matchs de suite quand c'est possible
+  const out=[];
+  while(list.length){
+    const prev=out[out.length-1];
+    let k=prev?list.findIndex(g=>!g.includes(prev[0])&&!g.includes(prev[1])):0;
+    if(k<0) k=0;
+    out.push(list.splice(k,1)[0]);
+  }
+  // observateurs : les équipes qui ne jouent pas
+  return out.map(([a,b])=>{
+    const libres=teams.filter(x=>x!==a&&x!==b);
+    return {a,b,obsA:libres[0]||null,obsB:libres[1]||null,autres:libres.slice(2)};
+  });
+}
+function applySchedule(games){
+  const t=T(); const mine=games.filter(g=>g.a===t||g.b===t);
+  while(t.matchs.length<mine.length) t.matchs.push(newMatch());
+  mine.forEach((g,k)=>{
+    const m=t.matchs[k], adv=g.a===t?g.b:g.a, obs=g.a===t?g.obsA:g.obsB;
+    if(!m.adv || m.advAuto){ m.adv=tName(adv); m.advAuto=true }
+    if(obs && (!m.obs || m.obsAuto)){ m.obs="Équipe "+tName(obs); m.obsAuto=true }
+  });
+}
+function renderSched(games){
+  const t=T(), ct=classTeams();
+  if(ct.length<2){
+    $("schedSub").textContent="";
+    $("sched").innerHTML=`<p class="hint" style="margin:10px 0 0">Crée au moins 2 équipes avec <b>la même classe</b> pour générer l'ordre des matchs.</p>`;
+    return;
+  }
+  $("schedSub").textContent=`· ${t.classe||"sans classe"} · ${ct.length} équipes · ${games.length} matchs`;
+  let k=0;
+  $("sched").innerHTML = games.map((g,i)=>{
+    const mine=g.a===t||g.b===t, tab=mine?k++:null;
+    const obs=[g.obsA&&`${esc(tName(g.obsA))} observe ${esc(tName(g.a))}`, g.obsB&&`${esc(tName(g.obsB))} observe ${esc(tName(g.b))}`].filter(Boolean).join(" · ");
+    const autres=g.autres.length?` · En attente : ${g.autres.map(x=>esc(tName(x))).join(", ")}`:"";
+    return `<div class="game ${mine?"mine":""}" ${mine?`data-goto="${tab}"`:""}>
+      <span class="num">Match ${i+1}</span>
+      <span class="vs"><b>${esc(tName(g.a))}</b> contre <b>${esc(tName(g.b))}</b><small>${obs||"Pas d'équipe observatrice"}${autres}</small></span>
+      ${mine?`<span class="go">→ onglet Match ${tab+1}</span>`:""}
+    </div>`}).join("");
+}
+
+/* ===== CONSTRUCTION FIXE ===== */
+function build(){
+  $("counters").innerHTML = CONFIG.compteurs.map(c=>`
+    <div class="counter ${c.inverse?"vig":""}">
+      <div class="txt"><b>${c.titre}</b><small>${c.aide}</small></div>
+      <button class="cbtn minus" data-c="${c.id}" data-d="-1" aria-label="moins">−</button>
+      <span class="val" id="v_${c.id}">0</span>
+      <button class="cbtn plus" data-c="${c.id}" data-d="1" aria-label="plus">+</button>
+    </div>`).join("");
+  const lab=["Pas du tout","Un peu","Moyen","Bien","Excellent"];
+  $("spirit").innerHTML = CONFIG.esprit.map(e=>`
+    <div class="crit"><b>${e.titre}</b><small>${e.aide}</small>
+      <div class="scale s5">${lab.map((l,i)=>`<button data-e="${e.id}" data-n="${i}"><strong>${i}</strong>${l}</button>`).join("")}</div></div>`).join("");
+  $("entraide").innerHTML = CONFIG.entraide.map((t,i)=>`
+    <div class="crit"><b>${t}</b>
+      <div class="scale s3" style="margin-top:8px">${FREQ.map((f,n)=>`<button data-en="${i}" data-n="${n}">${f}</button>`).join("")}</div></div>`).join("");
+}
+
+/* ===== RENDU ===== */
+function render(){
+  const t=T();
+  const games=schedule(); applySchedule(games); renderSched(games);
+  if(D.tab!=="syn" && D.tab>=t.matchs.length) D.tab=0;
+
+  $("teamSel").innerHTML = D.teams.map((x,i)=>`<option value="${i}" ${i===D.cur?"selected":""}>${esc(x.nom||"Équipe sans nom")}${x.classe?" · "+esc(x.classe):""}</option>`).join("");
+  $("tNom").value=t.nom; $("tClasse").value=t.classe;
+  $("chips").innerHTML = t.joueurs.length ? t.joueurs.map((p,i)=>`<span class="chip">${esc(p)}<button data-rm="${i}" aria-label="retirer">×</button></span>`).join("")
+    : '<span class="hint" style="margin:0">Aucun joueur pour l\'instant.</span>';
+
+  $("tabs").innerHTML = t.matchs.map((m,i)=>{
+    const c = complete(m)?niv(scores(t,m).global).c : started(m)?"var(--muted)":"transparent";
+    return `<button class="tab ${D.tab===i?"on":""}" data-tab="${i}">Match ${i+1}<span class="dot" style="background:${c}"></span></button>`}).join("")
+    + `<button class="tab add" data-addmatch="1" aria-label="ajouter un match">+</button>`
+    + `<button class="tab syn ${D.tab==="syn"?"on":""}" data-tab="syn">Synthèse</button>`;
+
+  const isSyn = D.tab==="syn";
+  $("matchView").hidden=isSyn; $("synView").hidden=!isSyn;
+  isSyn ? renderSyn() : renderMatch();
+  save();
+}
+
+function renderMatch(){
+  const t=T(), m=M();
+  $("mDate").value=m.date; $("mAdv").value=m.adv; $("mObs").value=m.obs;
+  $("pres").innerHTML = t.joueurs.length ? t.joueurs.map((p,i)=>`<button data-abs="${i}" class="${m.absents.includes(p)?"abs":""}">${esc(p)}</button>`).join("")
+    : '<span class="hint" style="margin:0">Ajoute d\'abord les joueurs de l\'équipe (en haut).</span>';
+  const pr=presents(t,m);
+  $("touch").innerHTML = pr.length ? pr.map(p=>{
+    const n=m.touches[p]||0, cls=n>=CONFIG.touchesMini?"ok":(n?"low":""), i=t.joueurs.indexOf(p);
+    return `<div class="tp ${cls}" data-t="${i}"><button class="m" data-tm="${i}" aria-label="moins">−</button><b>${esc(p)}</b><span class="n">${n}</span></div>`}).join("")
+    : '<p class="hint">Aucun joueur présent.</p>';
+  const part=participation(t,m), oub=pr.filter(p=>(m.touches[p]||0)<CONFIG.touchesMini);
+  $("touchInfo").innerHTML = pr.length ? `<b>${part.ok}/${part.total}</b> joueurs ont touché le disque au moins ${CONFIG.touchesMini} fois.`+
+    (oub.length && oub.length<pr.length?` À faire jouer davantage : ${oub.map(esc).join(", ")}.`:"") : "";
+  CONFIG.compteurs.forEach(c=>$("v_"+c.id).textContent=m.cpt[c.id]);
+  $("pts").textContent=m.pts;
+  document.querySelectorAll("[data-e]").forEach(b=>b.classList.toggle("on",m.esprit[b.dataset.e]===+b.dataset.n));
+  document.querySelectorAll("[data-en]").forEach(b=>b.classList.toggle("on",m.entraide[b.dataset.en]===+b.dataset.n));
+
+  const sc=scores(t,m);
+  $("bars").innerHTML=[["Jeu collectif",sc.collectif],["Esprit du jeu",sc.esprit],["Entraide",sc.entraide]].map(([n,v])=>{
+    const l=niv(v); return `<div class="bar"><div class="top"><span>${n}</span><span>${l.nom}</span></div>
+    <div class="track"><div class="fill" style="width:${Math.max(4,v)}%;background:${l.c}"></div></div></div>`}).join("");
+  const g=niv(sc.global);
+  $("level").textContent = complete(m) ? `Bilan du match ${D.tab+1} : ${g.nom}` : "Bilan provisoire : complète l'esprit du jeu et l'entraide";
+  $("level").style.background = complete(m)?g.c:"var(--muted)";
+}
+
+function renderSyn(){
+  const t=T();
+  $("synTeam").textContent = t.nom?"· "+t.nom:"";
+  const played=t.matchs.map((m,i)=>({m,i})).filter(x=>started(x.m));
+  if(!played.length){ $("synTable").innerHTML='<tr><td class="hint">Aucun match rempli pour l\'instant.</td></tr>'; $("synPlayers").innerHTML=""; return }
+  const pc=v=>Math.round(v)+" %";
+  $("synTable").innerHTML = `<tr><th>Match</th><th>Date</th><th>Participation</th><th>Collectif</th><th>Esprit</th><th>Entraide</th><th>Niveau</th></tr>`+
+    played.map(({m,i})=>{ const s=scores(t,m), l=niv(s.global);
+      return `<tr><td><b>Match ${i+1}</b>${m.adv?"<br><small>vs "+esc(m.adv)+"</small>":""}</td><td>${esc(m.date)}</td><td>${pc(s.participation)}</td><td>${pc(s.collectif)}</td><td>${pc(s.esprit)}</td><td>${pc(s.entraide)}</td>
+      <td>${complete(m)?`<span class="lv" style="background:${l.c}">${l.nom}</span>`:"<small>incomplet</small>"}</td></tr>`}).join("");
+  $("synPlayers").innerHTML = `<tr><th>Joueur</th>${played.map(({i})=>`<th>M${i+1}</th>`).join("")}<th>Total</th></tr>`+
+    t.joueurs.map(p=>{ let tot=0;
+      const cells=played.map(({m})=>{ if(m.absents.includes(p)) return "<td><small>abs</small></td>"; const n=m.touches[p]||0; tot+=n;
+        return `<td style="color:${n>=CONFIG.touchesMini?"var(--accent)":"var(--warn)"};font-weight:700">${n}</td>` }).join("");
+      return `<tr><td>${esc(p)}</td>${cells}<td><b>${tot}</b></td></tr>` }).join("");
+}
+
+/* ===== ÉVÉNEMENTS ===== */
+function addPlayer(){
+  const v=$("newPlayer").value.trim(); if(!v) return;
+  if(T().joueurs.includes(v)){ toast("Ce prénom est déjà dans la liste"); return }
+  T().joueurs.push(v); $("newPlayer").value=""; render(); $("newPlayer").focus();
+}
+$("addPlayer").onclick=addPlayer;
+$("newPlayer").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); addPlayer() } });
+$("teamSel").onchange=e=>{ D.cur=+e.target.value; D.tab=0; render() };
+$("newTeam").onclick=()=>{ D.teams.push(newTeam()); D.cur=D.teams.length-1; D.tab=0; render(); $("tNom").focus() };
+$("delTeam").onclick=()=>{
+  if(!confirm(`Supprimer l'équipe « ${T().nom||"sans nom"} » et tous ses matchs ? C'est définitif.`)) return;
+  D.teams.splice(D.cur,1); if(!D.teams.length) D.teams.push(newTeam()); D.cur=0; D.tab=0; render();
+};
+function softRefresh(){   // met à jour le planning sans perdre le champ en cours de saisie
+  const g=schedule(); applySchedule(g); renderSched(g);
+  if(D.tab!=="syn") renderMatch();
+  $("teamSel").options[D.cur].text=tName(T())+(T().classe?" · "+T().classe:"");
+  save();
+}
+$("tNom").addEventListener("input",e=>{ T().nom=e.target.value; softRefresh() });
+$("tClasse").addEventListener("input",e=>{ T().classe=e.target.value; softRefresh() });
+$("mDate").addEventListener("input",e=>{ M().date=e.target.value; save() });
+$("mAdv").addEventListener("input",e=>{ M().adv=e.target.value; M().advAuto=false; save() });
+$("mObs").addEventListener("input",e=>{ M().obs=e.target.value; M().obsAuto=false; save() });
+$("delMatch").onclick=()=>{
+  if(!confirm(`Effacer toutes les observations du match ${D.tab+1} ?`)) return;
+  T().matchs[D.tab]=newMatch(); render();
+};
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button,[data-t],[data-goto]"); if(!b) return;
+  const t=T(), m=D.tab==="syn"?null:M(), d=b.dataset;
+  if(d.goto!==undefined){ D.tab=+d.goto; if(!M().date) M().date=today(); render();
+    window.scrollTo({top:$("matchView").offsetTop-60,behavior:"smooth"}); return }
+  if(d.tab!==undefined){ D.tab = d.tab==="syn"?"syn":+d.tab;
+    if(D.tab!=="syn" && !M().date) M().date=today();
+    render(); window.scrollTo({top:$("tabs").offsetTop-4,behavior:"smooth"}); return }
+  if(d.addmatch){ t.matchs.push(newMatch()); D.tab=t.matchs.length-1; M().date=today(); render(); toast(`Match ${D.tab+1} ajouté`); return }
+  if(d.rm!==undefined){ const p=t.joueurs[+d.rm]; if(!confirm("Retirer "+p+" de l'équipe ?")) return; t.joueurs.splice(+d.rm,1); render(); return }
+  if(!m) return;
+  if(d.abs!==undefined){ const p=t.joueurs[+d.abs]; m.absents=m.absents.includes(p)?m.absents.filter(x=>x!==p):[...m.absents,p] }
+  else if(d.tm!==undefined){ const p=t.joueurs[+d.tm]; m.touches[p]=Math.max(0,(m.touches[p]||0)-1) }
+  else if(d.t!==undefined){ const p=t.joueurs[+d.t]; m.touches[p]=(m.touches[p]||0)+1; buzz() }
+  else if(d.c){ m.cpt[d.c]=Math.max(0,m.cpt[d.c]+ +d.d); buzz() }
+  else if(d.e){ m.esprit[d.e]=+d.n }
+  else if(d.en!==undefined){ m.entraide[d.en]=+d.n }
+  else if(d.pts){ m.pts=Math.max(0,m.pts+ +d.pts) }
+  else return;
+  render();
+});
+
+$("btnPrint").onclick=()=>window.print();
+$("btnCsv").onclick=()=>{
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const head=["Classe","Équipe","Match","Date","Adversaire","Observateurs","Joueur","Présent","Touches de disque",
+    "Participation équipe %",...CONFIG.compteurs.map(c=>c.titre),...CONFIG.esprit.map(e=>"Esprit - "+e.titre),
+    ...CONFIG.entraide.map(x=>"Entraide - "+x),"Points (info)","Jeu collectif %","Esprit du jeu %","Entraide %","Global %","Niveau"];
+  const rows=[];
+  D.teams.forEach(t=>t.matchs.forEach((m,i)=>{
+    if(!started(m)) return;
+    const s=scores(t,m);
+    const common=[Math.round(s.participation),...CONFIG.compteurs.map(c=>m.cpt[c.id]),...CONFIG.esprit.map(e=>m.esprit[e.id]??""),
+      ...CONFIG.entraide.map((x,k)=>m.entraide[k]!==undefined?FREQ[m.entraide[k]]:""),m.pts,
+      Math.round(s.collectif),Math.round(s.esprit),Math.round(s.entraide),Math.round(s.global),complete(m)?niv(s.global).nom:"incomplet"];
+    t.joueurs.forEach(p=>{ const abs=m.absents.includes(p);
+      rows.push([t.classe,t.nom,i+1,m.date,m.adv,m.obs,p,abs?"non":"oui",abs?"":(m.touches[p]||0),...common].map(q).join(";")) });
+  }));
+  if(!rows.length){ toast("Aucun match rempli à exporter"); return }
+  const blob=new Blob(["\ufeff"+[head.map(q).join(";"),...rows].join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`ultimate_equipes_${today()}.csv`; document.body.appendChild(a); a.click(); a.remove();
+};
+
+build();
+if(D.tab!=="syn" && !M().date) M().date=today();
+render();
+</script>
+</body>
+</html>
