@@ -211,7 +211,8 @@ const CONFIG = {
     { id:"e3", t:"On félicite l'équipe adverse pour une belle action" },
     { id:"e4", t:"On organise l'équipe ensemble (placements, tactique)" }
   ],
-  equipesParDefaut: ["Bleu","Rouge","Vert","Jaune"]
+  equipesParDefaut: ["Bleu","Rouge","Vert","Jaune"],
+  codeProf: "2026"          // ← code demandé pour ouvrir l'interface prof : changez-le !
 };
 const NIVEAUX = [
   { min:0,  nom:"Maîtrise insuffisante", c:"var(--l1)" },
@@ -342,12 +343,12 @@ function renderHome(){
   <div class="home"><div>
     <div style="font-size:3.4rem">🥏</div>
     <h1>Ultimate 5e · Fiche d'équipe</h1>
-    <p class="hint" style="margin-top:8px">Jeu collectif, esprit du jeu, entraide. Choisissez le rôle de cet appareil.</p>
-    <div class="roles">
-      <a class="role" href="#prof"><div class="ic">💻</div><b>Prof (PC)</b><small>Équipes, déroulé des matchs, résultats</small></a>
+    <p class="hint" style="margin-top:8px">Quelle tablette as-tu dans les mains ?</p>
+    <div class="roles" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));width:min(560px,100%)">
       <a class="role" href="#tablette1"><div class="ic">📱</div><b>Tablette 1</b><small>Observe l'équipe écrite à gauche</small></a>
       <a class="role" href="#tablette2"><div class="ic">📱</div><b>Tablette 2</b><small>Observe l'équipe écrite à droite</small></a>
     </div>
+    <p style="margin-top:40px"><a href="#prof" style="color:var(--muted);font-size:.85rem">Accès prof 🔒</a></p>
     ${DB.mode==="demo"?`<p class="hint" style="margin-top:22px">Mode démo : Firebase n'est pas configuré, les données restent sur cet appareil.<br>Pour tester, ouvrez le prof et les tablettes dans plusieurs onglets.</p>`:""}
   </div></div>`;
 }
@@ -368,6 +369,7 @@ function renderProf(){
   <div class="top">
     <h1>Ultimate 5e · Prof</h1>
     <span class="sub">Fiche d'équipe : jeu collectif, esprit du jeu, entraide</span>
+    <button class="btn small" data-act="lock" style="order:3" title="Redemander le code sur ce PC">🔒 Verrouiller</button>
     <span class="badge ${DB.mode==="demo"?"":CONNECTED?"ok":"ko"}">${DB.mode==="demo"?"Mode démo (cet appareil)":CONNECTED?"● Tablettes connectées via Firebase":"● Hors ligne"}</span>
   </div>
 
@@ -419,6 +421,7 @@ function renderProf(){
     <div class="row">
       <button class="btn pri big" data-act="next" ${!games.length?"disabled":""}>${cur?"Match suivant ▶":"▶ Lancer le 1er match"}</button>
       ${cur?`<button class="btn" data-act="stop">⏸ Mettre les tablettes en attente</button>`:""}
+      <button class="btn small" data-act="resetAll" style="margin-left:auto">↺ Remettre tous les matchs à zéro</button>
     </div>
     ${games.map(g=>{
       const f1=C.fiches[ficheKey(g.a.id,g.b.id)], f2=C.fiches[ficheKey(g.b.id,g.a.id)];
@@ -496,6 +499,7 @@ function initProf(){
   document.addEventListener("click",e=>{
     const b=e.target.closest("[data-act]"); if(!b) return;
     const C=profClass(), a=b.dataset.act;
+    if(a==="lock"){ try{ localStorage.removeItem(PROF_KEY) }catch(e){} location.hash=""; return; }
     if(a==="newClass"){
       const nom=prompt("Nom de la classe (ex : 5C)"); if(!nom||!nom.trim()) return;
       const cid=cidOf(nom);
@@ -518,6 +522,11 @@ function initProf(){
       DB.set(CP()+"/current",{a:games[i].a.id,b:games[i].b.id}); toast(`Match ${i+1} lancé sur les tablettes`);
     }
     if(a==="stop"){ DB.set(CP()+"/current",null); }
+    if(a==="resetAll"){
+      const nb=Object.keys(C.fiches).length;
+      if(!confirm(`Remettre à zéro tous les matchs de ${C.nom} ?\n\n${nb} fiche(s) seront effacées définitivement. Les équipes et les joueurs sont conservés.\n\nPensez à exporter le CSV avant si besoin.`)) return;
+      DB.set(CP()+"/fiches",null).then(()=>DB.set(CP()+"/current",null)).then(()=>toast("Tous les matchs sont remis à zéro"));
+    }
     if(a==="csv"){ exportCSV(C,games); }
   });
 }
@@ -565,7 +574,7 @@ function saveLocal(){
 }
 function renderTab(useLocal){
   const x=tabCtx();
-  const bar=`<div class="tbar">📱 Tablette ${SIDE}${x.C?" · "+esc(x.C.nom):""} <a href="#">changer de rôle</a></div>`;
+  const bar=`<div class="tbar">📱 Tablette ${SIDE}${x.C?" · "+esc(x.C.nom):""}</div>`;
   if(!x.C || !x.g){
     LOCALKEY=null;
     $("app").innerHTML = bar + `<div class="card wait"><div class="disc">🥏</div><h2 style="font-size:2rem;margin:12px 0 4px">En attente du prof</h2>
@@ -677,7 +686,27 @@ function initTablette(side){
 }
 
 /* ===================== DÉMARRAGE ===================== */
-if(ROLE==="prof") initProf();
+/* Accès prof protégé par un code (mémorisé sur le PC une fois saisi) */
+const PROF_KEY="ultimate5e_prof_ok";
+function profUnlocked(){ try{ return localStorage.getItem(PROF_KEY)===CONFIG.codeProf }catch(e){ return false } }
+function renderLock(err){
+  $("app").innerHTML=`<div class="home"><div class="card" style="max-width:380px;width:100%">
+    <div style="font-size:2.6rem">🔒</div><h1 style="font-size:1.8rem;margin:6px 0 4px">Accès prof</h1>
+    <p class="hint">Entrez le code pour ouvrir l'interface prof.</p>
+    <form id="lockForm" class="row" style="justify-content:center">
+      <input type="password" id="code" inputmode="numeric" autocomplete="off" placeholder="Code" style="padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;width:160px;text-align:center">
+      <button class="btn pri">Entrer</button>
+    </form>
+    ${err?`<p style="color:var(--l1);font-weight:600;margin-top:10px">Code incorrect</p>`:""}
+    <p style="margin-top:18px"><a href="#" style="color:var(--muted);font-size:.85rem">← Retour</a></p>
+  </div></div>`;
+  $("code").focus();
+  $("lockForm").onsubmit=e=>{ e.preventDefault();
+    if($("code").value.trim()===CONFIG.codeProf){ try{ localStorage.setItem(PROF_KEY,CONFIG.codeProf) }catch(e){} initProf(); }
+    else renderLock(true); };
+}
+
+if(ROLE==="prof"){ profUnlocked() ? initProf() : renderLock(false); }
 else if(ROLE==="tablette1") initTablette(1);
 else if(ROLE==="tablette2") initTablette(2);
 else renderHome();
