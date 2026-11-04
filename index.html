@@ -2,252 +2,184 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Fiche Équipe Ultimate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ultimate 5e · Fiche d'équipe</title>
+<meta name="theme-color" content="#F2F4F1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ultimate 5e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥏</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE : collez ici la configuration de votre projet
+   (Console Firebase → Paramètres du projet → Vos applications → Web → Config)
+   Laissez null pour tester en « mode démo » (tout sur le même appareil).
+   ===================================================================== */
+const FIREBASE_CONFIG = null;
+/* Exemple :
+const FIREBASE_CONFIG = {
+  apiKey: "AIza...",
+  authDomain: "mon-projet.firebaseapp.com",
+  databaseURL: "https://mon-projet-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "mon-projet",
+  appId: "1:123:web:abc"
+};
+*/
+</script>
 <style>
-  :root{
-    --bg:#f4f6f3; --card:#ffffff; --ink:#1d2a24; --muted:#5d6b64; --line:#dfe5e1;
-    --accent:#1f8a5b; --accent-soft:#e3f3ea; --warn:#d9822b; --warn-soft:#fbeedd;
-    --before:#2f6fb5; --during:#1f8a5b; --after:#8a4fb5;
-    --l1:#c94a3c; --l2:#e3a33a; --l3:#5aae6e; --l4:#1f8a5b;
+:root{
+  --bg:#F2F4F1; --card:#fff; --ink:#17212B; --muted:#56616C; --line:#D9DED8;
+  --accent:#1D8047; --accent-soft:#E2F1E8; --warn:#D2631C; --warn-soft:#FBEBDD;
+  --before:#1E5DBA; --during:#1D8047; --after:#6A4FB5;
+  --l1:#CC3A2E; --l2:#D99A1E; --l3:#4FA866; --l4:#1D8047;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121820; --card:#1B232D; --ink:#E8ECEF; --muted:#9AA6B2; --line:#2C3743;
+    --accent:#5CC58A; --accent-soft:#1E3A2B; --warn:#F29A5C; --warn-soft:#3A2A1C;
+    --before:#6FA3F0; --during:#5CC58A; --after:#A993F0;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#141a17; --card:#1d2622; --ink:#e8efe9; --muted:#9aa9a1; --line:#2e3a34;
-      --accent:#3fbf84; --accent-soft:#1f3a2d; --warn-soft:#3a2c1a;
-      --before:#5b9be0; --during:#3fbf84; --after:#b07fe0;
-    }
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:920px;margin:0 auto;padding:16px 16px 110px}
-  header{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
-  .disc{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,var(--accent) 19% 100%);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15);flex:none}
-  h1{font-size:1.4rem;margin:0}
-  header p{margin:2px 0 0;color:var(--muted);font-size:.93rem}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
-  .card h2{margin:0 0 4px;font-size:1.12rem}
-  .hint{color:var(--muted);font-size:.92rem;margin:0 0 14px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-  label.f{display:block;font-size:.85rem;color:var(--muted);font-weight:600}
-  input[type=text],input[type=date],select{width:100%;margin-top:4px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
-  .row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
-  .row > label{flex:1;min-width:180px}
-  .btn{padding:12px 16px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;background:var(--line);color:var(--ink)}
-  .btn.pri{background:var(--accent);color:#fff}
-  .btn.small{padding:8px 12px;font-size:.88rem}
-  /* phases */
-  .phase{display:flex;align-items:center;gap:12px;margin:26px 0 12px}
-  .phase .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:1.2rem;flex:none}
-  .phase h3{margin:0;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em}
-  .phase small{display:block;color:var(--muted);font-size:.85rem;text-transform:none;letter-spacing:0;font-weight:400}
-  .phase::after{content:"";flex:1;height:2px;background:var(--line)}
-  .p-before .ico{background:var(--before)} .p-before h3{color:var(--before)}
-  .p-during .ico{background:var(--during)} .p-during h3{color:var(--during)}
-  .p-after  .ico{background:var(--after)}  .p-after  h3{color:var(--after)}
-  .card.b-before{border-left:5px solid var(--before)}
-  .card.b-during{border-left:5px solid var(--during)}
-  .card.b-after{border-left:5px solid var(--after)}
-  /* onglets */
-  .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 2px;margin-bottom:4px;position:sticky;top:0;background:var(--bg);z-index:4}
-  .tab{flex:none;padding:12px 18px;border-radius:12px 12px 0 0;border:1px solid var(--line);border-bottom:0;background:var(--line);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;position:relative}
-  .tab.on{background:var(--card);color:var(--accent)}
-  .tab .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;vertical-align:middle}
-  .tab.add{background:transparent;border-style:dashed;color:var(--accent)}
-  .tab.syn{margin-left:auto}
-  /* ordre des matchs */
-  .sched{border-radius:0 16px 16px 16px}
-  .sched summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:1.05rem}
-  .sched summary::-webkit-details-marker{display:none}
-  .sched summary::after{content:"▾";color:var(--muted);font-size:1.2rem}
-  .sched:not([open]) summary::after{content:"▸"}
-  .game{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;margin-top:8px;border:1px solid var(--line)}
-  .game .num{font-weight:800;min-width:74px;color:var(--muted)}
-  .game .vs{flex:1}
-  .game .vs small{display:block;color:var(--muted);font-size:.85rem}
-  .game.mine{border:2px solid var(--accent);background:var(--accent-soft);cursor:pointer}
-  .game.mine .num{color:var(--accent)}
-  .game .go{font-size:.8rem;font-weight:700;color:var(--accent);white-space:nowrap}
-  /* joueurs */
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .chip{display:flex;align-items:center;gap:6px;background:var(--accent-soft);padding:6px 6px 6px 12px;border-radius:99px;font-weight:600}
-  .chip button{border:0;background:var(--card);color:var(--muted);width:26px;height:26px;border-radius:50%;cursor:pointer;font-weight:700}
-  .pres{display:flex;flex-wrap:wrap;gap:8px}
-  .pres button{padding:10px 14px;border-radius:99px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
-  .pres button.abs{border-color:var(--line);background:var(--bg);color:var(--muted);text-decoration:line-through}
-  /* touches */
-  .touch{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-  .tp{position:relative;border:2px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;user-select:none;background:var(--bg);transition:transform .08s}
-  .tp:active{transform:scale(.96)}
-  .tp b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tp .n{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums}
-  .tp.low{border-color:var(--warn);background:var(--warn-soft)}
-  .tp.ok{border-color:var(--accent);background:var(--accent-soft)}
-  .tp .m{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-weight:800;cursor:pointer}
-  .info{margin-top:10px;font-size:.92rem;color:var(--muted)}
-  /* compteurs */
-  .counter{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-  .counter:first-child{border-top:0}
-  .counter .txt{flex:1}
-  .counter .txt b{display:block}
-  .counter .txt small{color:var(--muted)}
-  .counter.vig .txt b{color:var(--warn)}
-  .cbtn{width:54px;height:54px;border-radius:14px;border:0;font-size:1.6rem;font-weight:700;cursor:pointer;flex:none}
-  .minus{background:var(--line);color:var(--ink)}
-  .plus{background:var(--accent);color:#fff}
-  .vig .plus{background:var(--warn)}
-  .cbtn:active{transform:scale(.94)}
-  .val{min-width:44px;text-align:center;font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
-  .mini{display:flex;align-items:center;gap:10px;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:.9rem;color:var(--muted)}
-  .mini .cbtn{width:40px;height:40px;font-size:1.2rem}
-  /* échelles */
-  .crit{padding:12px 0;border-top:1px solid var(--line)}
-  .crit:first-child{border-top:0}
-  .crit b{display:block}
-  .crit small{color:var(--muted);display:block;margin-bottom:8px}
-  .scale{display:grid;gap:6px}
-  .s5{grid-template-columns:repeat(5,1fr)} .s3{grid-template-columns:repeat(3,1fr)}
-  .scale button{padding:10px 4px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer;line-height:1.2}
-  .scale button strong{display:block;font-size:1.15rem}
-  .scale button.on{border-color:var(--after);background:var(--after);color:#fff}
-  /* bilan */
-  .bars{display:grid;gap:12px}
-  .bar .top{display:flex;justify-content:space-between;font-weight:600;font-size:.95rem;gap:8px}
-  .track{height:14px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
-  .fill{height:100%;border-radius:99px;transition:width .3s,background .3s}
-  .level{margin-top:16px;padding:14px;border-radius:12px;text-align:center;font-weight:700;font-size:1.1rem;color:#fff}
-  .note{font-size:.85rem;color:var(--muted);margin-top:10px}
-  /* synthèse */
-  .tbl{width:100%;border-collapse:collapse;font-size:.92rem}
-  .tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center}
-  .tbl th:first-child,.tbl td:first-child{text-align:left}
-  .tbl th{color:var(--muted);font-weight:600}
-  .lv{display:inline-block;padding:3px 9px;border-radius:99px;color:#fff;font-size:.8rem;font-weight:700}
-  .scroll{overflow-x:auto}
-  .actions{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;z-index:5}
-  .saveflag{align-self:center;font-size:.85rem;color:var(--muted)}
-  .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
-  .toast.show{opacity:1}
-  @media print{.actions,.toast,.cbtn,.tp .m,.tabs,.btn,.chip button{display:none!important} body{background:#fff} .card{break-inside:avoid}}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Barlow",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:16px 16px 60px}
+h1,h2,.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+h1{font-size:2.1rem;margin:0;line-height:1}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0 18px}
+.top .sub{color:var(--muted);font-size:.95rem}
+.badge{margin-left:auto;font-size:.82rem;font-weight:600;padding:5px 12px;border-radius:99px;background:var(--line);color:var(--muted)}
+.badge.ok{background:var(--accent-soft);color:var(--accent)}
+.badge.ko{background:var(--warn-soft);color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{margin:0 0 6px;font-size:1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--card);font-size:1.1rem}
+.hint{color:var(--muted);font-size:.93rem;margin:0 0 12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type=text],select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;min-width:0}
+.btn{padding:11px 16px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;background:var(--line);color:var(--ink)}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.big{padding:16px 22px;font-size:1.1rem}
+.btn.small{padding:7px 12px;font-size:.88rem}
+.btn:disabled{opacity:.4;cursor:default}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.12)}
+/* accueil */
+.home{min-height:80vh;display:grid;place-items:center;text-align:center}
+.home h1{font-size:2.6rem}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:28px;width:min(760px,100%)}
+.role{display:block;text-decoration:none;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:26px 18px}
+.role:hover{border-color:var(--accent)}
+.role .ic{font-size:2.6rem}
+.role b{display:block;font-size:1.35rem;margin-top:6px;font-family:"Barlow Condensed",sans-serif}
+.role small{color:var(--muted)}
+/* équipes (prof) */
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.team{border:1px solid var(--line);border-left:6px solid var(--tc,var(--ink));border-radius:12px;padding:12px;background:var(--bg)}
+.team .row input{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);padding:4px 4px 4px 10px;border-radius:99px;font-weight:600;font-size:.92rem}
+.chip button{border:0;background:none;color:var(--muted);width:24px;height:24px;border-radius:50%;cursor:pointer;font-weight:700}
+/* planning */
+.game{display:grid;grid-template-columns:86px 1fr auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px}
+.game .num{font:700 1.3rem "Barlow Condensed",sans-serif;color:var(--muted)}
+.game .vs{font-weight:700;font-size:1.05rem}
+.game .vs small{display:block;font-weight:400;color:var(--muted);font-size:.88rem;margin-top:2px}
+.game.cur{border:2px solid var(--accent);background:var(--accent-soft)}
+.game.cur .num{color:var(--accent)}
+.game.done{opacity:.75}
+.st{font-size:.8rem;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--line);color:var(--muted);white-space:nowrap}
+.st.on{background:var(--accent);color:#fff}
+.st.ok{background:var(--accent-soft);color:var(--accent)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+/* en direct */
+.live{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.lv{border:1px solid var(--line);border-radius:12px;padding:14px}
+.lv h3{margin:0 0 4px;font:700 1.2rem "Barlow Condensed",sans-serif}
+.kv{display:flex;justify-content:space-between;font-size:.93rem;padding:4px 0;border-bottom:1px dashed var(--line)}
+.lvl{display:inline-block;padding:3px 10px;border-radius:99px;color:#fff;font-size:.8rem;font-weight:700}
+/* tableaux */
+.scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:center}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{color:var(--muted);font-weight:600}
+details summary{cursor:pointer;font-weight:600;margin-top:10px}
+/* tablette */
+.tbar{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--muted);margin:4px 0 12px}
+.tbar a{margin-left:auto;font-weight:500;font-size:.85rem;color:var(--muted)}
+.wait{text-align:center;padding:60px 20px}
+.wait .disc{font-size:4rem;display:inline-block;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.wait .disc{animation:none}}
+.mission{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+.mission .mnum{font:700 1.1rem "Barlow Condensed",sans-serif;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.mission .mvs{font:700 2rem "Barlow Condensed",sans-serif;margin:2px 0 14px}
+.mission .mvs span{color:var(--muted);font-weight:600;font-size:1.3rem;margin:0 6px}
+.mrole{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.mrole .box{border-radius:12px;padding:14px 8px;color:#fff}
+.mrole small{display:block;font-size:.85rem;opacity:.9}
+.mrole b{font:700 1.6rem "Barlow Condensed",sans-serif}
+.mrole .eye{font-size:2rem}
+.phase{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
+.phase .ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+.phase h3{margin:0;font:700 1.25rem "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.05em}
+.phase::after{content:"";flex:1;height:2px;background:var(--line)}
+.p1 .ico{background:var(--before)} .p1 h3{color:var(--before)}
+.p2 .ico{background:var(--during)} .p2 h3{color:var(--during)}
+.p3 .ico{background:var(--after)}  .p3 h3{color:var(--after)}
+.pres{display:flex;flex-wrap:wrap;gap:8px}
+.pres button{padding:10px 14px;border-radius:99px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.pres button.abs{border-color:var(--line);background:var(--bg);color:var(--muted);text-decoration:line-through}
+.touch{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tp{position:relative;border:2px solid var(--line);border-radius:14px;padding:16px 8px 12px;text-align:center;cursor:pointer;user-select:none;background:var(--bg)}
+.tp:active{transform:scale(.96)}
+.tp b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp .n{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums}
+.tp.low{border-color:var(--warn);background:var(--warn-soft)}
+.tp.ok{border-color:var(--accent);background:var(--accent-soft)}
+.tp .m{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-weight:800;cursor:pointer}
+.counter{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.counter:first-child{border-top:0}
+.counter .txt{flex:1}
+.counter .txt b{display:block}
+.counter .txt small{color:var(--muted)}
+.counter.vig .txt b{color:var(--warn)}
+.cbtn{width:56px;height:56px;border-radius:14px;border:0;font-size:1.6rem;font-weight:700;cursor:pointer;flex:none}
+.minus{background:var(--line);color:var(--ink)}
+.plus{background:var(--accent);color:#fff}
+.vig .plus{background:var(--warn)}
+.val{min-width:44px;text-align:center;font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
+.mini{display:flex;align-items:center;gap:10px;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);margin-top:10px}
+.mini .cbtn{width:42px;height:42px;font-size:1.2rem}
+.crit{padding:12px 0;border-top:1px solid var(--line)}
+.crit:first-child{border-top:0}
+.crit b{display:block}
+.crit small{color:var(--muted);display:block;margin-bottom:8px}
+.scale{display:grid;gap:6px}
+.s5{grid-template-columns:repeat(5,1fr)} .s3{grid-template-columns:repeat(3,1fr)}
+.scale button{padding:10px 4px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer;line-height:1.2}
+.scale button strong{display:block;font-size:1.15rem}
+.scale button.on{border-color:var(--after);background:var(--after);color:#fff}
+.sendbar{position:sticky;bottom:0;background:var(--bg);padding:12px 0;margin-top:10px}
+.sendbar .btn{width:100%}
+.sent{text-align:center;padding:30px 16px;border:2px solid var(--accent);background:var(--accent-soft);border-radius:16px}
+.sent .big{font-size:3rem}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+@media (max-width:560px){.game{grid-template-columns:1fr;gap:6px}.mrole b{font-size:1.25rem}}
+@media print{.btn,.badge,.toast{display:none!important}body{background:#fff}.card{break-inside:avoid}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-<header>
-  <div class="disc" aria-hidden="true"></div>
-  <div>
-    <h1>Ultimate 5e · Fiche d'équipe</h1>
-    <p>Jeu collectif, esprit du jeu, entraide : on évalue l'équipe ensemble, pas le score.</p>
-  </div>
-</header>
-
-<!-- ÉQUIPE (une seule fois, avant le 1er match) -->
-<div class="phase p-before"><span class="ico">①</span><h3>Avant le 1er match<small>Une seule fois : l'équipe et ses joueurs</small></h3></div>
-<section class="card b-before">
-  <div class="row">
-    <label class="f">Équipe suivie sur cette tablette<select id="teamSel"></select></label>
-    <button class="btn small" id="newTeam">+ Nouvelle équipe</button>
-    <button class="btn small" id="delTeam">Supprimer l'équipe</button>
-  </div>
-  <div class="grid" style="margin-top:12px">
-    <label class="f">Nom / couleur de l'équipe<input type="text" id="tNom" placeholder="Les Bleus"></label>
-    <label class="f">Classe<input type="text" id="tClasse" placeholder="5e…"></label>
-  </div>
-  <div class="row" style="margin-top:12px">
-    <label class="f">Ajouter un joueur<input type="text" id="newPlayer" placeholder="Prénom" enterkeyhint="done"></label>
-    <button class="btn pri" id="addPlayer">Ajouter</button>
-  </div>
-  <div class="chips" id="chips"></div>
-</section>
-
-<!-- ONGLETS -->
-<nav class="tabs" id="tabs"></nav>
-
-<details class="card sched" id="schedBox" open>
-  <summary><span><b>Ordre des matchs</b> <span class="hint" id="schedSub" style="margin:0"></span></span></summary>
-  <div id="sched"></div>
-</details>
-
-<div id="matchView">
-  <div class="phase p-before"><span class="ico">②</span><h3>Avant le match<small>Les observateurs préparent la fiche</small></h3></div>
-  <section class="card b-before">
-    <div class="grid">
-      <label class="f">Date<input type="date" id="mDate"></label>
-      <label class="f">Équipe adverse<input type="text" id="mAdv"></label>
-      <label class="f">Observateurs<input type="text" id="mObs" placeholder="Prénoms"></label>
-    </div>
-    <p class="hint" style="margin:14px 0 8px">Qui joue aujourd'hui ? Touche un prénom pour marquer un absent.</p>
-    <div class="pres" id="pres"></div>
-  </section>
-
-  <div class="phase p-during"><span class="ico">③</span><h3>Pendant le match<small>Les observateurs appuient à chaque action vue</small></h3></div>
-  <section class="card b-during">
-    <h2>1 · Tout le monde joue ?</h2>
-    <p class="hint">Touche le prénom du joueur <b>chaque fois qu'il reçoit le disque</b>. Le bouton − corrige une erreur.</p>
-    <div class="touch" id="touch"></div>
-    <div class="info" id="touchInfo"></div>
-  </section>
-  <section class="card b-during">
-    <h2>2 · Le jeu collectif</h2>
-    <p class="hint">Une action collective qui échoue compte autant qu'une action qui réussit !</p>
-    <div id="counters"></div>
-    <div class="mini" style="margin-top:10px">
-      <span style="flex:1">Points marqués <i>(pour info, ne compte pas dans le bilan)</i></span>
-      <button class="cbtn minus" data-pts="-1" aria-label="moins">−</button>
-      <span class="val" id="pts" style="font-size:1.2rem">0</span>
-      <button class="cbtn plus" data-pts="1" aria-label="plus">+</button>
-    </div>
-  </section>
-
-  <div class="phase p-after"><span class="ico">④</span><h3>Après le match<small>Les observateurs complètent, puis lisent le bilan à l'équipe</small></h3></div>
-  <section class="card b-after">
-    <h2>3 · L'esprit du jeu de l'équipe</h2>
-    <p class="hint">En ultimate, il n'y a pas d'arbitre : les joueurs font respecter les règles eux-mêmes. 0 = pas du tout · 4 = excellent.</p>
-    <div id="spirit"></div>
-  </section>
-  <section class="card b-after">
-    <h2>4 · L'entraide dans l'équipe</h2>
-    <p class="hint">À quelle fréquence l'avez-vous vu ?</p>
-    <div id="entraide"></div>
-  </section>
-  <section class="card b-after">
-    <h2>Bilan du match</h2>
-    <div class="bars" id="bars"></div>
-    <div class="level" id="level"></div>
-    <p class="note">Calcul : jeu collectif 40 % (participation de tous + actions collectives) · esprit du jeu 40 % · entraide 20 %. Le même bilan vaut pour chaque joueur présent.</p>
-    <button class="btn small" id="delMatch" style="margin-top:8px">Effacer ce match</button>
-  </section>
-</div>
-
-<div id="synView" hidden>
-  <section class="card">
-    <h2>Synthèse de l'équipe <span id="synTeam"></span></h2>
-    <p class="hint">L'évolution de l'équipe match après match.</p>
-    <div class="scroll"><table class="tbl" id="synTable"></table></div>
-  </section>
-  <section class="card">
-    <h2>Touches de disque par joueur</h2>
-    <p class="hint">Pour vérifier que chacun est intégré au jeu (abs = absent).</p>
-    <div class="scroll"><table class="tbl" id="synPlayers"></table></div>
-  </section>
-</div>
-
-</div>
-
-<div class="actions">
-  <span class="saveflag">✔ Sauvegarde automatique sur la tablette</span>
-  <button class="btn" id="btnCsv">Exporter (CSV)</button>
-  <button class="btn" id="btnPrint">Imprimer / PDF</button>
-</div>
+<div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===== RÉGLAGES PROFESSEUR (modifiables) ===== */
+/* ===================== RÉGLAGES PROFESSEUR (modifiables) ===================== */
 const CONFIG = {
   poids: { collectif: 40, esprit: 40, entraide: 20 },
   touchesMini: 3,
-  nbMatchsDepart: 4,
   compteurs: [
     { id:"collectif", titre:"Action collective (disque passé par 3 joueurs ou +)", aide:"Réussie ou non, elle compte !", seuils:[2,4,7] },
     { id:"sequence",  titre:"Longue séquence (5 passes ou + sans perte)", aide:"L'équipe garde le disque en le faisant circuler", seuils:[1,2,4] },
@@ -262,12 +194,13 @@ const CONFIG = {
     { id:"comm",     titre:"Communication respectueuse", aide:"Les litiges se règlent en discutant calmement" }
   ],
   entraide: [
-    "On encourage un coéquipier après une erreur",
-    "On donne le disque à celui qui l'a peu touché",
-    "On explique une règle ou un placement à un camarade",
-    "On félicite l'équipe adverse pour une belle action",
-    "On organise l'équipe ensemble (placements, tactique)"
-  ]
+    { id:"e0", t:"On encourage un coéquipier après une erreur" },
+    { id:"e1", t:"On donne le disque à celui qui l'a peu touché" },
+    { id:"e2", t:"On explique une règle ou un placement à un camarade" },
+    { id:"e3", t:"On félicite l'équipe adverse pour une belle action" },
+    { id:"e4", t:"On organise l'équipe ensemble (placements, tactique)" }
+  ],
+  equipesParDefaut: ["Bleu","Rouge","Vert","Jaune"]
 };
 const NIVEAUX = [
   { min:0,  nom:"Maîtrise insuffisante", c:"var(--l1)" },
@@ -276,272 +209,462 @@ const NIVEAUX = [
   { min:80, nom:"Très bonne maîtrise",    c:"var(--l4)" }
 ];
 const FREQ = ["Jamais","Parfois","Souvent"];
-const KEY = "ultimate_equipes_v2";
+const COULEURS = { bleu:"#1E5DBA", rouge:"#CC3A2E", vert:"#1D8047", jaune:"#C99A00", orange:"#D2631C", rose:"#D94F8C",
+  violet:"#6A4FB5", noir:"#2B2B2B", blanc:"#9AA6B2", gris:"#6B7680", marron:"#8A5A3B", turquoise:"#159A9C", ciel:"#4A9FE0" };
 
-/* ===== DONNÉES ===== */
-const today = () => new Date().toISOString().slice(0,10);
-const newMatch = () => ({ date:"", adv:"", obs:"", absents:[], touches:{},
-  cpt:Object.fromEntries(CONFIG.compteurs.map(c=>[c.id,0])), esprit:{}, entraide:{}, pts:0 });
-const newTeam = () => ({ id:Date.now().toString(36), nom:"", classe:"", joueurs:[],
-  matchs:Array.from({length:CONFIG.nbMatchsDepart},newMatch) });
-
-function load(){ try{ const v=localStorage.getItem(KEY); return v?JSON.parse(v):null }catch(e){ return null } }
-let D = load() || { teams:[newTeam()], cur:0, tab:0 };
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(D)) }catch(e){ toast("⚠ Sauvegarde impossible sur cet appareil") } }
-
-const T = () => D.teams[D.cur];
-const M = () => T().matchs[D.tab];
+/* ===================== OUTILS ===================== */
 const $ = id => document.getElementById(id);
-const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),1800) }
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = p => p + Math.random().toString(36).slice(2,8);
+const arr = x => !x ? [] : Array.isArray(x) ? x.filter(Boolean) : Object.keys(x).sort((a,b)=>a-b).map(k=>x[k]).filter(Boolean);
+const norm = t => String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function teamColor(nom){ const n=norm(nom); for(const k in COULEURS) if(n.includes(k)) return COULEURS[k]; return "var(--ink)"; }
+const tName = t => (t && t.nom.trim()) || "Équipe sans nom";
+const cidOf = nom => nom.trim().replace(/[.#$\[\]\/\s]+/g,"_");
+let toastT; function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),2200); }
 function buzz(){ try{ navigator.vibrate && navigator.vibrate(15) }catch(e){} }
 
-/* ===== CALCULS ===== */
-function n4(v,seuils,inv){ let n=1; seuils.forEach(s=>{ if(v>=s) n++ }); return inv?5-n:n }
-const presents = (t,m) => t.joueurs.filter(p=>!m.absents.includes(p));
-function participation(t,m){
-  const j=presents(t,m); if(!j.length) return {pct:0,ok:0,total:0};
-  const ok=j.filter(p=>(m.touches[p]||0)>=CONFIG.touchesMini).length;
-  return {pct:ok/j.length*100,ok,total:j.length};
+/* ===================== BASE DE DONNÉES ===================== */
+const ROOT = "ultimate5e";
+function makeFirebaseDB(){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db = firebase.database();
+  const ref = p => db.ref(p ? ROOT+"/"+p : ROOT);
+  return {
+    mode:"firebase",
+    on(cb){ ref("").on("value", s => cb(s.val() || {})); },
+    onConn(cb){ db.ref(".info/connected").on("value", s => cb(!!s.val())); },
+    set(p,v){ return ref(p).set(v ?? null); }
+  };
 }
-function started(m){
-  return Object.values(m.touches).some(v=>v>0) || Object.values(m.cpt).some(v=>v>0) ||
-         Object.keys(m.esprit).length || Object.keys(m.entraide).length;
+function makeLocalDB(){
+  const K="ultimate5e_demo"; let S={}; const subs=[];
+  const load=()=>{ try{ S=JSON.parse(localStorage.getItem(K))||{} }catch(e){ S={} } };
+  const clone=v=>v==null?null:JSON.parse(JSON.stringify(v));
+  const notify=()=>subs.forEach(cb=>cb(clone(S)||{}));
+  load();
+  window.addEventListener("storage",e=>{ if(e.key===K){ load(); notify(); } });
+  return {
+    mode:"demo",
+    on(cb){ subs.push(cb); cb(clone(S)||{}); },
+    onConn(cb){ cb(true); },
+    set(p,v){
+      const ks=p.split("/").filter(Boolean); let o=S;
+      for(let i=0;i<ks.length-1;i++){ if(typeof o[ks[i]]!=="object"||o[ks[i]]===null) o[ks[i]]={}; o=o[ks[i]]; }
+      if(v==null) delete o[ks[ks.length-1]]; else o[ks[ks.length-1]]=clone(v);
+      try{ localStorage.setItem(K,JSON.stringify(S)) }catch(e){}
+      notify(); return Promise.resolve();
+    }
+  };
 }
-function complete(m){ return Object.keys(m.esprit).length===CONFIG.esprit.length && Object.keys(m.entraide).length===CONFIG.entraide.length }
-function scores(t,m){
-  const part=participation(t,m);
-  const pn = part.pct>=100?4 : part.pct>=75?3 : part.pct>=50?2 : 1;
-  const notes=[pn,...CONFIG.compteurs.map(c=>n4(m.cpt[c.id],c.seuils,c.inverse))];
-  const collectif=notes.reduce((a,b)=>a+b,0)/(notes.length*4)*100;
-  const esprit=Object.values(m.esprit).reduce((a,b)=>a+b,0)/(CONFIG.esprit.length*4)*100;
-  const entraide=Object.values(m.entraide).reduce((a,b)=>a+b,0)/(CONFIG.entraide.length*2)*100;
-  const p=CONFIG.poids, tot=p.collectif+p.esprit+p.entraide;
-  return {collectif,esprit,entraide,participation:part.pct,global:(collectif*p.collectif+esprit*p.esprit+entraide*p.entraide)/tot};
-}
-const niv = p => [...NIVEAUX].reverse().find(n=>p>=n.min);
+let DB;
+try{ DB = (FIREBASE_CONFIG && window.firebase) ? makeFirebaseDB() : makeLocalDB(); }
+catch(e){ console.error(e); DB = makeLocalDB(); }
 
-/* ===== ORDRE DES MATCHS (toutes les équipes de la même classe se rencontrent) ===== */
-const tName = x => x.nom.trim() || "Équipe sans nom";
-function classTeams(){
-  const c=T().classe.trim().toLowerCase();
-  return D.teams.filter(x=>x.classe.trim().toLowerCase()===c);
+/* ===================== DONNÉES ===================== */
+function normClass(c){
+  if(!c) return null;
+  return { nom:c.nom||"", current:c.current||null, fiches:c.fiches||{},
+    teams: arr(c.teams).map(t=>({ id:t.id, nom:t.nom||"", joueurs:arr(t.joueurs) })) };
 }
-function schedule(){
-  const teams=classTeams(); if(teams.length<2) return [];
-  const arr=teams.slice(); if(arr.length%2) arr.push(null);
-  const N=arr.length;
-  let pos=[arr[0],...arr.slice(2),arr[1]];          // 1er match : équipe 1 contre équipe 2
-  let list=[];
+function normFiche(f){
+  f=f||{};
+  return { absents:f.absents||{}, touches:f.touches||{},
+    cpt:Object.assign(Object.fromEntries(CONFIG.compteurs.map(c=>[c.id,0])), f.cpt||{}),
+    esprit:f.esprit||{}, entraide:f.entraide||{}, pts:f.pts||0, envoye:!!f.envoye, obsNoms:f.obsNoms||"",
+    meta:f.meta||{} };
+}
+const ficheKey = (observedId, advId) => observedId + "__" + advId;
+
+/* Planning : tout le monde se rencontre une fois, les équipes libres observent */
+function schedule(teams){
+  if(teams.length<2) return [];
+  const a0=teams.slice(); if(a0.length%2) a0.push(null);
+  const N=a0.length; let pos=[a0[0],...a0.slice(2),a0[1]], list=[];
   for(let r=0;r<N-1;r++){
-    for(let i=0;i<N/2;i++){ const a=pos[i], b=pos[N-1-i]; if(a&&b) list.push([a,b]) }
+    for(let i=0;i<N/2;i++){ const a=pos[i], b=pos[N-1-i]; if(a&&b) list.push([a,b]); }
     pos=[pos[0],pos[N-1],...pos.slice(1,N-1)];
   }
-  // évite qu'une équipe joue deux matchs de suite quand c'est possible
   const out=[];
   while(list.length){
-    const prev=out[out.length-1];
-    let k=prev?list.findIndex(g=>!g.includes(prev[0])&&!g.includes(prev[1])):0;
-    if(k<0) k=0;
+    const p=out[out.length-1];
+    let k=p?list.findIndex(g=>!g.includes(p[0])&&!g.includes(p[1])):0; if(k<0) k=0;
     out.push(list.splice(k,1)[0]);
   }
-  // observateurs : les équipes qui ne jouent pas
-  return out.map(([a,b])=>{
+  return out.map(([a,b],i)=>{
     const libres=teams.filter(x=>x!==a&&x!==b);
-    return {a,b,obsA:libres[0]||null,obsB:libres[1]||null,autres:libres.slice(2)};
+    return { i, a, b, obs1:libres[0]||null, obs2:libres[1]||null, attente:libres.slice(2) };
   });
 }
-function applySchedule(games){
-  const t=T(); const mine=games.filter(g=>g.a===t||g.b===t);
-  while(t.matchs.length<mine.length) t.matchs.push(newMatch());
-  mine.forEach((g,k)=>{
-    const m=t.matchs[k], adv=g.a===t?g.b:g.a, obs=g.a===t?g.obsA:g.obsB;
-    if(!m.adv || m.advAuto){ m.adv=tName(adv); m.advAuto=true }
-    if(obs && (!m.obs || m.obsAuto)){ m.obs="Équipe "+tName(obs); m.obsAuto=true }
+const findGame = (games,cur) => cur ? games.find(g=>g.a.id===cur.a && g.b.id===cur.b) : null;
+
+/* ===================== CALCULS ===================== */
+function n4(v,s,inv){ let n=1; s.forEach(x=>{ if(v>=x) n++ }); return inv?5-n:n; }
+function scores(team,f){
+  const pres=team.joueurs.filter(j=>!f.absents[j.id]);
+  const ok=pres.filter(j=>(f.touches[j.id]||0)>=CONFIG.touchesMini).length;
+  const part=pres.length?ok/pres.length*100:0;
+  const pn=part>=100?4:part>=75?3:part>=50?2:1;
+  const notes=[pn,...CONFIG.compteurs.map(c=>n4(f.cpt[c.id]||0,c.seuils,c.inverse))];
+  const collectif=notes.reduce((a,b)=>a+b,0)/(notes.length*4)*100;
+  const esprit=Object.values(f.esprit).reduce((a,b)=>a+b,0)/(CONFIG.esprit.length*4)*100;
+  const entraide=Object.values(f.entraide).reduce((a,b)=>a+b,0)/(CONFIG.entraide.length*2)*100;
+  const p=CONFIG.poids, tot=p.collectif+p.esprit+p.entraide;
+  return { part, ok, nPres:pres.length, collectif, esprit, entraide,
+    global:(collectif*p.collectif+esprit*p.esprit+entraide*p.entraide)/tot };
+}
+const complete = f => Object.keys(f.esprit).length===CONFIG.esprit.length && Object.keys(f.entraide).length===CONFIG.entraide.length;
+const niv = p => [...NIVEAUX].reverse().find(n=>p>=n.min);
+const lvlChip = (f,s) => complete(f) ? `<span class="lvl" style="background:${niv(s.global).c}">${niv(s.global).nom}</span>` : `<span class="st">en cours</span>`;
+const teamTag = t => t ? `<span class="tag"><span class="dot" style="background:${teamColor(t.nom)}"></span>${esc(tName(t))}</span>` : "—";
+
+/* ===================== ÉTAT GLOBAL ===================== */
+let ROOTDATA = {}, CONNECTED = true;
+const ROLE = location.hash.replace("#","").toLowerCase();
+window.addEventListener("hashchange",()=>location.reload());
+
+/* =====================================================================
+   ACCUEIL
+   ===================================================================== */
+function renderHome(){
+  $("app").innerHTML = `
+  <div class="home"><div>
+    <div style="font-size:3.4rem">🥏</div>
+    <h1>Ultimate 5e · Fiche d'équipe</h1>
+    <p class="hint" style="margin-top:8px">Jeu collectif, esprit du jeu, entraide. Choisissez le rôle de cet appareil.</p>
+    <div class="roles">
+      <a class="role" href="#prof"><div class="ic">💻</div><b>Prof (PC)</b><small>Équipes, déroulé des matchs, résultats</small></a>
+      <a class="role" href="#tablette1"><div class="ic">📱</div><b>Tablette 1</b><small>Observe l'équipe écrite à gauche</small></a>
+      <a class="role" href="#tablette2"><div class="ic">📱</div><b>Tablette 2</b><small>Observe l'équipe écrite à droite</small></a>
+    </div>
+    ${DB.mode==="demo"?`<p class="hint" style="margin-top:22px">Mode démo : Firebase n'est pas configuré, les données restent sur cet appareil.<br>Pour tester, ouvrez le prof et les tablettes dans plusieurs onglets.</p>`:""}
+  </div></div>`;
+}
+
+/* =====================================================================
+   PROF (PC)
+   ===================================================================== */
+function profClass(){ const cid=ROOTDATA.active; return cid ? normClass((ROOTDATA.classes||{})[cid]) : null; }
+const CP = () => "classes/"+ROOTDATA.active;
+
+function renderProf(){
+  const classes = ROOTDATA.classes||{}, cid = ROOTDATA.active, C = profClass();
+  const keepFocus = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.keep;
+  const focusId = keepFocus ? document.activeElement.id : null;
+  const focusVal = keepFocus ? document.activeElement.value : null;
+
+  let h = `
+  <div class="top">
+    <h1>Ultimate 5e · Prof</h1>
+    <span class="sub">Fiche d'équipe : jeu collectif, esprit du jeu, entraide</span>
+    <span class="badge ${DB.mode==="demo"?"":CONNECTED?"ok":"ko"}">${DB.mode==="demo"?"Mode démo (cet appareil)":CONNECTED?"● Tablettes connectées via Firebase":"● Hors ligne"}</span>
+  </div>
+
+  <section class="card">
+    <h2><span class="step">1</span>La classe</h2>
+    <p class="hint">La classe choisie ici s'affiche automatiquement sur les deux tablettes.</p>
+    <div class="row">
+      <select id="classSel" style="flex:1;min-width:180px">
+        <option value="">— Choisir une classe —</option>
+        ${Object.keys(classes).map(k=>`<option value="${esc(k)}" ${k===cid?"selected":""}>${esc(classes[k].nom||k)}</option>`).join("")}
+      </select>
+      <button class="btn pri" data-act="newClass">+ Nouvelle classe</button>
+      ${C?`<button class="btn small" data-act="delClass">Supprimer la classe</button>`:""}
+    </div>
+  </section>`;
+
+  if(!C){ $("app").innerHTML = h + `<p class="hint">Créez ou choisissez une classe pour commencer.</p>`; return; }
+
+  const games = schedule(C.teams), cur = findGame(games, C.current);
+
+  /* --- 2. équipes --- */
+  h += `
+  <section class="card">
+    <h2><span class="step">2</span>Les équipes de ${esc(C.nom)}</h2>
+    <p class="hint">À faire avant la séance. Astuce : nommez les équipes par une couleur (Bleu, Rouge…), la couleur s'affiche sur les tablettes.</p>
+    <div class="teams">
+      ${C.teams.map((t,ti)=>`
+      <div class="team" style="--tc:${teamColor(t.nom)}">
+        <div class="row">
+          <span class="dot" style="background:${teamColor(t.nom)}"></span>
+          <input type="text" id="tn_${t.id}" data-keep="1" data-tname="${ti}" value="${esc(t.nom)}" placeholder="Nom de l'équipe">
+          <button class="btn small" data-act="delTeam" data-t="${ti}" title="Supprimer l'équipe">✕</button>
+        </div>
+        <div class="chips">${t.joueurs.length?t.joueurs.map(j=>`<span class="chip">${esc(j.nom)}<button data-act="rmPl" data-t="${ti}" data-j="${j.id}" aria-label="retirer">×</button></span>`).join(""):`<span class="hint" style="margin:0">Aucun joueur</span>`}</div>
+        <div class="row">
+          <input type="text" id="np_${t.id}" data-keep="1" data-addpl="${ti}" placeholder="Prénom" style="flex:1" enterkeyhint="done">
+          <button class="btn pri small" data-act="addPl" data-t="${ti}">Ajouter</button>
+        </div>
+      </div>`).join("")}
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn small" data-act="addTeam">+ Ajouter une équipe</button></div>
+  </section>`;
+
+  /* --- 3. déroulé --- */
+  h += `
+  <section class="card">
+    <h2><span class="step">3</span>Le déroulé de la séance <span class="hint" style="margin:0;font-family:Barlow;font-size:.95rem">${games.length} matchs</span></h2>
+    <p class="hint">Lancez un match : les deux tablettes affichent aussitôt qui observe qui. <b>Tablette 1</b> observe toujours l'équipe écrite à gauche, <b>Tablette 2</b> celle écrite à droite.</p>
+    <div class="row">
+      <button class="btn pri big" data-act="next" ${!games.length?"disabled":""}>${cur?"Match suivant ▶":"▶ Lancer le 1er match"}</button>
+      ${cur?`<button class="btn" data-act="stop">⏸ Mettre les tablettes en attente</button>`:""}
+    </div>
+    ${games.map(g=>{
+      const f1=C.fiches[ficheKey(g.a.id,g.b.id)], f2=C.fiches[ficheKey(g.b.id,g.a.id)];
+      const sent=(f1&&f1.envoye?1:0)+(f2&&f2.envoye?1:0), isCur=cur&&cur.i===g.i;
+      const st = isCur?`<span class="st on">EN COURS · ${sent}/2 fiches</span>` : sent===2?`<span class="st ok">✔ 2/2 fiches</span>` : sent?`<span class="st">${sent}/2 fiches</span>` : "";
+      return `<div class="game ${isCur?"cur":sent===2?"done":""}">
+        <span class="num">Match ${g.i+1}</span>
+        <span class="vs">${teamTag(g.a)} <span style="color:var(--muted);font-weight:500">contre</span> ${teamTag(g.b)}
+          <small>📱1 : ${g.obs1?esc(tName(g.obs1))+" observe "+esc(tName(g.a)):"pas d'observateur"} · 📱2 : ${g.obs2?esc(tName(g.obs2))+" observe "+esc(tName(g.b)):"pas d'observateur"}${g.attente.length?" · En attente : "+g.attente.map(t=>esc(tName(t))).join(", "):""}</small></span>
+        <span class="row">${st}${isCur?"":`<button class="btn small" data-act="launch" data-i="${g.i}">Lancer</button>`}</span>
+      </div>`}).join("") || `<p class="hint">Il faut au moins 2 équipes.</p>`}
+  </section>`;
+
+  /* --- 4. en direct --- */
+  if(cur){
+    h += `<section class="card"><h2><span class="step">4</span>En direct · Match ${cur.i+1}</h2><div class="live">
+      ${[[cur.a,cur.b,cur.obs1,1],[cur.b,cur.a,cur.obs2,2]].map(([obsd,adv,obsr,n])=>{
+        const f=normFiche(C.fiches[ficheKey(obsd.id,adv.id)]), s=scores(obsd,f);
+        return `<div class="lv" style="border-left:6px solid ${teamColor(obsd.nom)}">
+          <h3>📱 Tablette ${n} · ${esc(tName(obsd))}</h3>
+          <p class="hint" style="margin:0 0 8px">Observée par ${obsr?esc(tName(obsr)):"—"}${f.obsNoms?" ("+esc(f.obsNoms)+")":""} · ${f.envoye?"<b style='color:var(--accent)'>✔ fiche envoyée</b>":"en cours de saisie"}</p>
+          <div class="kv"><span>Joueurs à ${CONFIG.touchesMini} touches ou +</span><b>${s.ok}/${s.nPres}</b></div>
+          ${CONFIG.compteurs.map(c=>`<div class="kv"><span>${esc(c.titre.split(" (")[0])}</span><b>${f.cpt[c.id]||0}</b></div>`).join("")}
+          <div class="kv"><span>Esprit du jeu / entraide</span><b>${Object.keys(f.esprit).length}/5 · ${Object.keys(f.entraide).length}/5</b></div>
+          <div style="margin-top:10px">${lvlChip(f,s)}</div>
+        </div>`}).join("")}
+    </div></section>`;
+  }
+
+  /* --- 5. résultats --- */
+  h += `<section class="card"><h2><span class="step">${cur?5:4}</span>Résultats par équipe</h2>
+    <p class="hint">Le même bilan vaut pour chaque joueur présent de l'équipe.</p>
+    <div class="scroll"><table class="tbl"><tr><th>Équipe</th>${[1,2,3,4,5].slice(0,Math.max(1,C.teams.length-1)).map(k=>`<th>${k}ᵉ rencontre</th>`).join("")}<th>Moyenne</th></tr>
+    ${C.teams.map(t=>{
+      const mine=games.filter(g=>g.a===t||g.b===t); let sum=0,n=0;
+      const cells=mine.map(g=>{ const adv=g.a===t?g.b:g.a, raw=C.fiches[ficheKey(t.id,adv.id)];
+        if(!raw) return `<td><small style="color:var(--muted)">M${g.i+1} · à venir</small></td>`;
+        const f=normFiche(raw), s=scores(t,f); if(complete(f)){ sum+=s.global; n++; }
+        return `<td><small>M${g.i+1} vs ${esc(tName(adv))}</small><br>${lvlChip(f,s)}</td>`; }).join("");
+      return `<tr><td>${teamTag(t)}</td>${cells}<td>${n?`<span class="lvl" style="background:${niv(sum/n).c}">${Math.round(sum/n)} %</span>`:"—"}</td></tr>`;
+    }).join("")}</table></div>
+    ${C.teams.map(t=>{
+      const mine=games.filter(g=>g.a===t||g.b===t);
+      return `<details><summary>Touches de disque · ${esc(tName(t))}</summary><div class="scroll"><table class="tbl">
+        <tr><th>Joueur</th>${mine.map(g=>`<th>M${g.i+1}</th>`).join("")}<th>Total</th></tr>
+        ${t.joueurs.map(j=>{ let tot=0; const cells=mine.map(g=>{ const adv=g.a===t?g.b:g.a, raw=C.fiches[ficheKey(t.id,adv.id)];
+            if(!raw) return "<td>·</td>"; const f=normFiche(raw); if(f.absents[j.id]) return "<td><small>abs</small></td>";
+            const v=f.touches[j.id]||0; tot+=v; return `<td style="font-weight:700;color:${v>=CONFIG.touchesMini?"var(--accent)":"var(--warn)"}">${v}</td>`; }).join("");
+          return `<tr><td>${esc(j.nom)}</td>${cells}<td><b>${tot}</b></td></tr>`; }).join("")}
+      </table></div></details>`}).join("")}
+    <div class="row" style="margin-top:14px">
+      <button class="btn pri" data-act="csv">Exporter la classe (CSV)</button>
+      <button class="btn" onclick="window.print()">Imprimer / PDF</button>
+    </div>
+  </section>`;
+
+  $("app").innerHTML = h;
+  if(focusId && $(focusId)){ const el=$(focusId); el.value=focusVal; el.focus(); }
+}
+
+function initProf(){
+  DB.onConn(c=>{ CONNECTED=c; if(ROOTDATA) renderProf(); });
+  DB.on(d=>{ ROOTDATA=d; renderProf(); });
+
+  document.addEventListener("change",e=>{
+    const t=e.target;
+    if(t.id==="classSel"){ DB.set("active", t.value||null); }
+    if(t.dataset.tname!==undefined){ const C=profClass(); C.teams[+t.dataset.tname].nom=t.value.trim(); DB.set(CP()+"/teams",C.teams); }
+  });
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Enter" && e.target.dataset.addpl!==undefined){ e.preventDefault(); addPlayer(+e.target.dataset.addpl); }
+  });
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-act]"); if(!b) return;
+    const C=profClass(), a=b.dataset.act;
+    if(a==="newClass"){
+      const nom=prompt("Nom de la classe (ex : 5C)"); if(!nom||!nom.trim()) return;
+      const cid=cidOf(nom);
+      if((ROOTDATA.classes||{})[cid]){ DB.set("active",cid); toast("Cette classe existe déjà, elle est sélectionnée."); return; }
+      DB.set("classes/"+cid,{ nom:nom.trim(), teams:CONFIG.equipesParDefaut.map(n=>({id:uid("t"),nom:n,joueurs:[]})) }).then(()=>DB.set("active",cid));
+      return;
+    }
+    if(!C) return;
+    const games=schedule(C.teams), cur=findGame(games,C.current);
+    if(a==="delClass"){ if(!confirm(`Supprimer la classe ${C.nom} et tous ses résultats ? C'est définitif.`)) return; DB.set(CP(),null).then(()=>DB.set("active",null)); }
+    if(a==="addTeam"){ C.teams.push({id:uid("t"),nom:"",joueurs:[]}); DB.set(CP()+"/teams",C.teams); }
+    if(a==="delTeam"){ const t=C.teams[+b.dataset.t]; if(!confirm(`Supprimer l'équipe ${tName(t)} ?`)) return; C.teams.splice(+b.dataset.t,1); DB.set(CP()+"/teams",C.teams); }
+    if(a==="addPl"){ addPlayer(+b.dataset.t); }
+    if(a==="rmPl"){ const t=C.teams[+b.dataset.t], j=t.joueurs.find(x=>x.id===b.dataset.j); if(!confirm(`Retirer ${j.nom} ?`)) return;
+      t.joueurs=t.joueurs.filter(x=>x.id!==b.dataset.j); DB.set(CP()+"/teams",C.teams); }
+    if(a==="launch"){ const g=games[+b.dataset.i]; DB.set(CP()+"/current",{a:g.a.id,b:g.b.id}); toast(`Match ${g.i+1} lancé sur les tablettes`); }
+    if(a==="next"){
+      const i=cur?cur.i+1:0;
+      if(i>=games.length){ DB.set(CP()+"/current",null); toast("Tous les matchs sont joués 🎉"); return; }
+      DB.set(CP()+"/current",{a:games[i].a.id,b:games[i].b.id}); toast(`Match ${i+1} lancé sur les tablettes`);
+    }
+    if(a==="stop"){ DB.set(CP()+"/current",null); }
+    if(a==="csv"){ exportCSV(C,games); }
   });
 }
-function renderSched(games){
-  const t=T(), ct=classTeams();
-  if(ct.length<2){
-    $("schedSub").textContent="";
-    $("sched").innerHTML=`<p class="hint" style="margin:10px 0 0">Crée au moins 2 équipes avec <b>la même classe</b> pour générer l'ordre des matchs.</p>`;
+function addPlayer(ti){
+  const C=profClass(), t=C.teams[ti], inp=$("np_"+t.id), v=inp.value.trim(); if(!v) return;
+  t.joueurs.push({id:uid("j"),nom:v}); inp.value=""; DB.set(CP()+"/teams",C.teams).then(()=>{ const el=$("np_"+t.id); if(el) el.focus(); });
+}
+function exportCSV(C,games){
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const head=["Classe","Match","Équipe observée","Adversaire","Équipe observatrice","Observateurs","Joueur","Présent","Touches de disque",
+    "Participation %",...CONFIG.compteurs.map(c=>c.titre),...CONFIG.esprit.map(e=>"Esprit - "+e.titre),...CONFIG.entraide.map(e=>"Entraide - "+e.t),
+    "Points (info)","Jeu collectif %","Esprit du jeu %","Entraide %","Global %","Niveau"];
+  const rows=[];
+  games.forEach(g=>[[g.a,g.b,g.obs1],[g.b,g.a,g.obs2]].forEach(([t,adv,obs])=>{
+    const raw=C.fiches[ficheKey(t.id,adv.id)]; if(!raw) return;
+    const f=normFiche(raw), s=scores(t,f);
+    const common=[Math.round(s.part),...CONFIG.compteurs.map(c=>f.cpt[c.id]||0),...CONFIG.esprit.map(e=>f.esprit[e.id]??""),
+      ...CONFIG.entraide.map(e=>f.entraide[e.id]!==undefined?FREQ[f.entraide[e.id]]:""),f.pts,
+      Math.round(s.collectif),Math.round(s.esprit),Math.round(s.entraide),Math.round(s.global),complete(f)?niv(s.global).nom:"incomplet"];
+    t.joueurs.forEach(j=>{ const abs=!!f.absents[j.id];
+      rows.push([C.nom,g.i+1,tName(t),tName(adv),obs?tName(obs):"",f.obsNoms,j.nom,abs?"non":"oui",abs?"":(f.touches[j.id]||0),...common].map(q).join(";")); });
+  }));
+  if(!rows.length){ toast("Aucune fiche à exporter"); return; }
+  const blob=new Blob(["﻿"+[head.map(q).join(";"),...rows].join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`ultimate_${cidOf(C.nom)}_${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* =====================================================================
+   TABLETTE
+   ===================================================================== */
+let SIDE=1, LOCAL=null, LOCALKEY=null, EDITING=false;
+function tabCtx(){
+  const cid=ROOTDATA.active, C=cid?normClass((ROOTDATA.classes||{})[cid]):null;
+  if(!C) return {C:null};
+  const games=schedule(C.teams), g=findGame(games,C.current);
+  if(!g) return {C,games,g:null};
+  const observed = SIDE===1?g.a:g.b, adv = SIDE===1?g.b:g.a, obsTeam = SIDE===1?g.obs1:g.obs2;
+  return { C, games, g, observed, adv, obsTeam, key:ficheKey(observed.id,adv.id), path:`classes/${cid}/fiches/${ficheKey(observed.id,adv.id)}` };
+}
+function saveLocal(){
+  const x=tabCtx(); if(!x.g||x.key!==LOCALKEY) return;
+  LOCAL.meta={ match:x.g.i+1, observe:tName(x.observed), adversaire:tName(x.adv), observateurs:x.obsTeam?tName(x.obsTeam):"", tablette:SIDE };
+  DB.set(x.path, LOCAL);
+}
+function renderTab(useLocal){
+  const x=tabCtx();
+  const bar=`<div class="tbar">📱 Tablette ${SIDE}${x.C?" · "+esc(x.C.nom):""} <a href="#">changer de rôle</a></div>`;
+  if(!x.C || !x.g){
+    LOCALKEY=null;
+    $("app").innerHTML = bar + `<div class="card wait"><div class="disc">🥏</div><h2 style="font-size:2rem;margin:12px 0 4px">En attente du prof</h2>
+      <p class="hint">${!x.C?"Aucune classe n'est sélectionnée sur le PC.":"Le prochain match va bientôt être lancé."}</p></div>`;
     return;
   }
-  $("schedSub").textContent=`· ${t.classe||"sans classe"} · ${ct.length} équipes · ${games.length} matchs`;
-  let k=0;
-  $("sched").innerHTML = games.map((g,i)=>{
-    const mine=g.a===t||g.b===t, tab=mine?k++:null;
-    const obs=[g.obsA&&`${esc(tName(g.obsA))} observe ${esc(tName(g.a))}`, g.obsB&&`${esc(tName(g.obsB))} observe ${esc(tName(g.b))}`].filter(Boolean).join(" · ");
-    const autres=g.autres.length?` · En attente : ${g.autres.map(x=>esc(tName(x))).join(", ")}`:"";
-    return `<div class="game ${mine?"mine":""}" ${mine?`data-goto="${tab}"`:""}>
-      <span class="num">Match ${i+1}</span>
-      <span class="vs"><b>${esc(tName(g.a))}</b> contre <b>${esc(tName(g.b))}</b><small>${obs||"Pas d'équipe observatrice"}${autres}</small></span>
-      ${mine?`<span class="go">→ onglet Match ${tab+1}</span>`:""}
-    </div>`}).join("");
-}
+  if(x.key!==LOCALKEY){ LOCALKEY=x.key; EDITING=false; useLocal=false; }
+  if(!useLocal || !LOCAL) LOCAL=normFiche(x.C.fiches[x.key]);
+  const f=LOCAL, t=x.observed, cO=teamColor(t.nom), cR=x.obsTeam?teamColor(x.obsTeam.nom):"var(--muted)";
 
-/* ===== CONSTRUCTION FIXE ===== */
-function build(){
-  $("counters").innerHTML = CONFIG.compteurs.map(c=>`
-    <div class="counter ${c.inverse?"vig":""}">
-      <div class="txt"><b>${c.titre}</b><small>${c.aide}</small></div>
-      <button class="cbtn minus" data-c="${c.id}" data-d="-1" aria-label="moins">−</button>
-      <span class="val" id="v_${c.id}">0</span>
-      <button class="cbtn plus" data-c="${c.id}" data-d="1" aria-label="plus">+</button>
-    </div>`).join("");
+  let h = bar + `
+  <section class="mission">
+    <div class="mnum">Match ${x.g.i+1} sur ${x.games.length}</div>
+    <div class="mvs">${esc(tName(x.g.a))}<span>contre</span>${esc(tName(x.g.b))}</div>
+    <div class="mrole">
+      <div class="box" style="background:${cR}"><small>Vous êtes</small><b>${x.obsTeam?esc(tName(x.obsTeam)):"Observateurs"}</b></div>
+      <div class="eye">👀</div>
+      <div class="box" style="background:${cO}"><small>Vous observez</small><b>${esc(tName(t))}</b></div>
+    </div>
+  </section>`;
+
+  if(f.envoye && !EDITING){
+    const s=scores(t,f);
+    $("app").innerHTML = h + `<div class="sent"><div class="big">✔</div><h2 style="font-size:1.8rem;margin:6px 0">Fiche envoyée au prof</h2>
+      <p>Bilan de l'équipe ${esc(tName(t))} : ${lvlChip(f,s)}</p><p class="hint">Rendez la tablette ou attendez que le prof lance le match suivant.</p>
+      <button class="btn" data-act="edit">Modifier la fiche</button></div>`;
+    return;
+  }
+
+  const pres=t.joueurs.filter(j=>!f.absents[j.id]);
+  const ok=pres.filter(j=>(f.touches[j.id]||0)>=CONFIG.touchesMini).length;
   const lab=["Pas du tout","Un peu","Moyen","Bien","Excellent"];
-  $("spirit").innerHTML = CONFIG.esprit.map(e=>`
-    <div class="crit"><b>${e.titre}</b><small>${e.aide}</small>
-      <div class="scale s5">${lab.map((l,i)=>`<button data-e="${e.id}" data-n="${i}"><strong>${i}</strong>${l}</button>`).join("")}</div></div>`).join("");
-  $("entraide").innerHTML = CONFIG.entraide.map((t,i)=>`
-    <div class="crit"><b>${t}</b>
-      <div class="scale s3" style="margin-top:8px">${FREQ.map((f,n)=>`<button data-en="${i}" data-n="${n}">${f}</button>`).join("")}</div></div>`).join("");
+  h += `
+  <div class="phase p1"><span class="ico">1</span><h3>Avant le match</h3></div>
+  <section class="card">
+    <p class="hint">Les joueurs de l'équipe ${esc(tName(t))}. Touchez le prénom d'un <b>absent</b> pour le barrer.</p>
+    <div class="pres">${t.joueurs.map(j=>`<button data-act="abs" data-j="${j.id}" class="${f.absents[j.id]?"abs":""}">${esc(j.nom)}</button>`).join("")||`<span class="hint">Le prof n'a pas encore saisi les joueurs.</span>`}</div>
+    <div class="row" style="margin-top:14px"><input type="text" id="obsNoms" value="${esc(f.obsNoms)}" placeholder="Vos prénoms (observateurs)" style="flex:1"></div>
+  </section>
+
+  <div class="phase p2"><span class="ico">2</span><h3>Pendant le match</h3></div>
+  <section class="card">
+    <h2 style="font-size:1.3rem">Tout le monde joue ?</h2>
+    <p class="hint">Touchez le prénom <b>chaque fois que le joueur reçoit le disque</b>. Le − corrige une erreur.</p>
+    <div class="touch">${pres.map(j=>{ const n=f.touches[j.id]||0, cls=n>=CONFIG.touchesMini?"ok":n?"low":"";
+      return `<div class="tp ${cls}" data-act="tp" data-j="${j.id}"><button class="m" data-act="tm" data-j="${j.id}" aria-label="moins">−</button><b>${esc(j.nom)}</b><span class="n">${n}</span></div>`}).join("")}</div>
+    <p class="hint" style="margin:10px 0 0"><b>${ok}/${pres.length}</b> joueurs ont touché le disque au moins ${CONFIG.touchesMini} fois.</p>
+  </section>
+  <section class="card">
+    <h2 style="font-size:1.3rem">Le jeu collectif</h2>
+    <p class="hint">Une action collective qui échoue compte autant qu'une action qui réussit !</p>
+    <div>${CONFIG.compteurs.map(c=>`<div class="counter ${c.inverse?"vig":""}"><div class="txt"><b>${c.titre}</b><small>${c.aide}</small></div>
+      <button class="cbtn minus" data-act="cpt" data-c="${c.id}" data-d="-1" aria-label="moins">−</button><span class="val">${f.cpt[c.id]||0}</span>
+      <button class="cbtn plus" data-act="cpt" data-c="${c.id}" data-d="1" aria-label="plus">+</button></div>`).join("")}</div>
+    <div class="mini"><span style="flex:1">Points marqués <i>(pour info, ne compte pas)</i></span>
+      <button class="cbtn minus" data-act="pts" data-d="-1">−</button><span class="val" style="font-size:1.2rem">${f.pts}</span><button class="cbtn plus" data-act="pts" data-d="1">+</button></div>
+  </section>
+
+  <div class="phase p3"><span class="ico">3</span><h3>Après le match</h3></div>
+  <section class="card">
+    <h2 style="font-size:1.3rem">L'esprit du jeu de l'équipe</h2>
+    <p class="hint">0 = pas du tout · 4 = excellent</p>
+    ${CONFIG.esprit.map(e=>`<div class="crit"><b>${e.titre}</b><small>${e.aide}</small><div class="scale s5">
+      ${lab.map((l,i)=>`<button data-act="esp" data-k="${e.id}" data-n="${i}" class="${f.esprit[e.id]===i?"on":""}"><strong>${i}</strong>${l}</button>`).join("")}</div></div>`).join("")}
+  </section>
+  <section class="card">
+    <h2 style="font-size:1.3rem">L'entraide dans l'équipe</h2>
+    <p class="hint">À quelle fréquence l'avez-vous vu ?</p>
+    ${CONFIG.entraide.map(e=>`<div class="crit"><b>${e.t}</b><div class="scale s3" style="margin-top:8px">
+      ${FREQ.map((l,i)=>`<button data-act="ent" data-k="${e.id}" data-n="${i}" class="${f.entraide[e.id]===i?"on":""}">${l}</button>`).join("")}</div></div>`).join("")}
+  </section>
+  <div class="sendbar"><button class="btn pri big" data-act="send">${complete(f)?"Envoyer la fiche au prof ✔":`Envoyer la fiche (encore ${CONFIG.esprit.length+CONFIG.entraide.length-Object.keys(f.esprit).length-Object.keys(f.entraide).length} réponses)`}</button></div>`;
+
+  const y=window.scrollY;
+  $("app").innerHTML = h;
+  window.scrollTo(0,y);
+}
+function initTablette(side){
+  SIDE=side;
+  DB.on(d=>{
+    ROOTDATA=d;
+    if(document.activeElement && document.activeElement.id==="obsNoms") return;   // ne pas couper la saisie
+    renderTab();
+  });
+  document.addEventListener("change",e=>{
+    if(e.target.id==="obsNoms" && LOCAL){ LOCAL.obsNoms=e.target.value.trim(); saveLocal(); }
+  });
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-act]"); if(!b||!LOCAL) return;
+    const f=LOCAL, a=b.dataset.act, d=b.dataset;
+    if(a==="tm"){ e.stopPropagation(); f.touches[d.j]=Math.max(0,(f.touches[d.j]||0)-1); }
+    else if(a==="tp"){ f.touches[d.j]=(f.touches[d.j]||0)+1; buzz(); }
+    else if(a==="abs"){ if(f.absents[d.j]) delete f.absents[d.j]; else f.absents[d.j]=true; }
+    else if(a==="cpt"){ f.cpt[d.c]=Math.max(0,(f.cpt[d.c]||0)+ +d.d); buzz(); }
+    else if(a==="pts"){ f.pts=Math.max(0,f.pts+ +d.d); }
+    else if(a==="esp"){ f.esprit[d.k]=+d.n; }
+    else if(a==="ent"){ f.entraide[d.k]=+d.n; }
+    else if(a==="send"){
+      if(!complete(f)){ toast("Répondez d'abord à toutes les questions de la partie 3 (Après le match)"); return; }
+      f.envoye=true; EDITING=false; window.scrollTo({top:0,behavior:"smooth"}); toast("Fiche envoyée au prof ✔");
+    }
+    else if(a==="edit"){ EDITING=true; renderTab(true); return; }
+    else return;
+    saveLocal(); renderTab(true);
+  });
 }
 
-/* ===== RENDU ===== */
-function render(){
-  const t=T();
-  const games=schedule(); applySchedule(games); renderSched(games);
-  if(D.tab!=="syn" && D.tab>=t.matchs.length) D.tab=0;
-
-  $("teamSel").innerHTML = D.teams.map((x,i)=>`<option value="${i}" ${i===D.cur?"selected":""}>${esc(x.nom||"Équipe sans nom")}${x.classe?" · "+esc(x.classe):""}</option>`).join("");
-  $("tNom").value=t.nom; $("tClasse").value=t.classe;
-  $("chips").innerHTML = t.joueurs.length ? t.joueurs.map((p,i)=>`<span class="chip">${esc(p)}<button data-rm="${i}" aria-label="retirer">×</button></span>`).join("")
-    : '<span class="hint" style="margin:0">Aucun joueur pour l\'instant.</span>';
-
-  $("tabs").innerHTML = t.matchs.map((m,i)=>{
-    const c = complete(m)?niv(scores(t,m).global).c : started(m)?"var(--muted)":"transparent";
-    return `<button class="tab ${D.tab===i?"on":""}" data-tab="${i}">Match ${i+1}<span class="dot" style="background:${c}"></span></button>`}).join("")
-    + `<button class="tab add" data-addmatch="1" aria-label="ajouter un match">+</button>`
-    + `<button class="tab syn ${D.tab==="syn"?"on":""}" data-tab="syn">Synthèse</button>`;
-
-  const isSyn = D.tab==="syn";
-  $("matchView").hidden=isSyn; $("synView").hidden=!isSyn;
-  isSyn ? renderSyn() : renderMatch();
-  save();
-}
-
-function renderMatch(){
-  const t=T(), m=M();
-  $("mDate").value=m.date; $("mAdv").value=m.adv; $("mObs").value=m.obs;
-  $("pres").innerHTML = t.joueurs.length ? t.joueurs.map((p,i)=>`<button data-abs="${i}" class="${m.absents.includes(p)?"abs":""}">${esc(p)}</button>`).join("")
-    : '<span class="hint" style="margin:0">Ajoute d\'abord les joueurs de l\'équipe (en haut).</span>';
-  const pr=presents(t,m);
-  $("touch").innerHTML = pr.length ? pr.map(p=>{
-    const n=m.touches[p]||0, cls=n>=CONFIG.touchesMini?"ok":(n?"low":""), i=t.joueurs.indexOf(p);
-    return `<div class="tp ${cls}" data-t="${i}"><button class="m" data-tm="${i}" aria-label="moins">−</button><b>${esc(p)}</b><span class="n">${n}</span></div>`}).join("")
-    : '<p class="hint">Aucun joueur présent.</p>';
-  const part=participation(t,m), oub=pr.filter(p=>(m.touches[p]||0)<CONFIG.touchesMini);
-  $("touchInfo").innerHTML = pr.length ? `<b>${part.ok}/${part.total}</b> joueurs ont touché le disque au moins ${CONFIG.touchesMini} fois.`+
-    (oub.length && oub.length<pr.length?` À faire jouer davantage : ${oub.map(esc).join(", ")}.`:"") : "";
-  CONFIG.compteurs.forEach(c=>$("v_"+c.id).textContent=m.cpt[c.id]);
-  $("pts").textContent=m.pts;
-  document.querySelectorAll("[data-e]").forEach(b=>b.classList.toggle("on",m.esprit[b.dataset.e]===+b.dataset.n));
-  document.querySelectorAll("[data-en]").forEach(b=>b.classList.toggle("on",m.entraide[b.dataset.en]===+b.dataset.n));
-
-  const sc=scores(t,m);
-  $("bars").innerHTML=[["Jeu collectif",sc.collectif],["Esprit du jeu",sc.esprit],["Entraide",sc.entraide]].map(([n,v])=>{
-    const l=niv(v); return `<div class="bar"><div class="top"><span>${n}</span><span>${l.nom}</span></div>
-    <div class="track"><div class="fill" style="width:${Math.max(4,v)}%;background:${l.c}"></div></div></div>`}).join("");
-  const g=niv(sc.global);
-  $("level").textContent = complete(m) ? `Bilan du match ${D.tab+1} : ${g.nom}` : "Bilan provisoire : complète l'esprit du jeu et l'entraide";
-  $("level").style.background = complete(m)?g.c:"var(--muted)";
-}
-
-function renderSyn(){
-  const t=T();
-  $("synTeam").textContent = t.nom?"· "+t.nom:"";
-  const played=t.matchs.map((m,i)=>({m,i})).filter(x=>started(x.m));
-  if(!played.length){ $("synTable").innerHTML='<tr><td class="hint">Aucun match rempli pour l\'instant.</td></tr>'; $("synPlayers").innerHTML=""; return }
-  const pc=v=>Math.round(v)+" %";
-  $("synTable").innerHTML = `<tr><th>Match</th><th>Date</th><th>Participation</th><th>Collectif</th><th>Esprit</th><th>Entraide</th><th>Niveau</th></tr>`+
-    played.map(({m,i})=>{ const s=scores(t,m), l=niv(s.global);
-      return `<tr><td><b>Match ${i+1}</b>${m.adv?"<br><small>vs "+esc(m.adv)+"</small>":""}</td><td>${esc(m.date)}</td><td>${pc(s.participation)}</td><td>${pc(s.collectif)}</td><td>${pc(s.esprit)}</td><td>${pc(s.entraide)}</td>
-      <td>${complete(m)?`<span class="lv" style="background:${l.c}">${l.nom}</span>`:"<small>incomplet</small>"}</td></tr>`}).join("");
-  $("synPlayers").innerHTML = `<tr><th>Joueur</th>${played.map(({i})=>`<th>M${i+1}</th>`).join("")}<th>Total</th></tr>`+
-    t.joueurs.map(p=>{ let tot=0;
-      const cells=played.map(({m})=>{ if(m.absents.includes(p)) return "<td><small>abs</small></td>"; const n=m.touches[p]||0; tot+=n;
-        return `<td style="color:${n>=CONFIG.touchesMini?"var(--accent)":"var(--warn)"};font-weight:700">${n}</td>` }).join("");
-      return `<tr><td>${esc(p)}</td>${cells}<td><b>${tot}</b></td></tr>` }).join("");
-}
-
-/* ===== ÉVÉNEMENTS ===== */
-function addPlayer(){
-  const v=$("newPlayer").value.trim(); if(!v) return;
-  if(T().joueurs.includes(v)){ toast("Ce prénom est déjà dans la liste"); return }
-  T().joueurs.push(v); $("newPlayer").value=""; render(); $("newPlayer").focus();
-}
-$("addPlayer").onclick=addPlayer;
-$("newPlayer").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); addPlayer() } });
-$("teamSel").onchange=e=>{ D.cur=+e.target.value; D.tab=0; render() };
-$("newTeam").onclick=()=>{ D.teams.push(newTeam()); D.cur=D.teams.length-1; D.tab=0; render(); $("tNom").focus() };
-$("delTeam").onclick=()=>{
-  if(!confirm(`Supprimer l'équipe « ${T().nom||"sans nom"} » et tous ses matchs ? C'est définitif.`)) return;
-  D.teams.splice(D.cur,1); if(!D.teams.length) D.teams.push(newTeam()); D.cur=0; D.tab=0; render();
-};
-function softRefresh(){   // met à jour le planning sans perdre le champ en cours de saisie
-  const g=schedule(); applySchedule(g); renderSched(g);
-  if(D.tab!=="syn") renderMatch();
-  $("teamSel").options[D.cur].text=tName(T())+(T().classe?" · "+T().classe:"");
-  save();
-}
-$("tNom").addEventListener("input",e=>{ T().nom=e.target.value; softRefresh() });
-$("tClasse").addEventListener("input",e=>{ T().classe=e.target.value; softRefresh() });
-$("mDate").addEventListener("input",e=>{ M().date=e.target.value; save() });
-$("mAdv").addEventListener("input",e=>{ M().adv=e.target.value; M().advAuto=false; save() });
-$("mObs").addEventListener("input",e=>{ M().obs=e.target.value; M().obsAuto=false; save() });
-$("delMatch").onclick=()=>{
-  if(!confirm(`Effacer toutes les observations du match ${D.tab+1} ?`)) return;
-  T().matchs[D.tab]=newMatch(); render();
-};
-
-document.addEventListener("click",e=>{
-  const b=e.target.closest("button,[data-t],[data-goto]"); if(!b) return;
-  const t=T(), m=D.tab==="syn"?null:M(), d=b.dataset;
-  if(d.goto!==undefined){ D.tab=+d.goto; if(!M().date) M().date=today(); render();
-    window.scrollTo({top:$("matchView").offsetTop-60,behavior:"smooth"}); return }
-  if(d.tab!==undefined){ D.tab = d.tab==="syn"?"syn":+d.tab;
-    if(D.tab!=="syn" && !M().date) M().date=today();
-    render(); window.scrollTo({top:$("tabs").offsetTop-4,behavior:"smooth"}); return }
-  if(d.addmatch){ t.matchs.push(newMatch()); D.tab=t.matchs.length-1; M().date=today(); render(); toast(`Match ${D.tab+1} ajouté`); return }
-  if(d.rm!==undefined){ const p=t.joueurs[+d.rm]; if(!confirm("Retirer "+p+" de l'équipe ?")) return; t.joueurs.splice(+d.rm,1); render(); return }
-  if(!m) return;
-  if(d.abs!==undefined){ const p=t.joueurs[+d.abs]; m.absents=m.absents.includes(p)?m.absents.filter(x=>x!==p):[...m.absents,p] }
-  else if(d.tm!==undefined){ const p=t.joueurs[+d.tm]; m.touches[p]=Math.max(0,(m.touches[p]||0)-1) }
-  else if(d.t!==undefined){ const p=t.joueurs[+d.t]; m.touches[p]=(m.touches[p]||0)+1; buzz() }
-  else if(d.c){ m.cpt[d.c]=Math.max(0,m.cpt[d.c]+ +d.d); buzz() }
-  else if(d.e){ m.esprit[d.e]=+d.n }
-  else if(d.en!==undefined){ m.entraide[d.en]=+d.n }
-  else if(d.pts){ m.pts=Math.max(0,m.pts+ +d.pts) }
-  else return;
-  render();
-});
-
-$("btnPrint").onclick=()=>window.print();
-$("btnCsv").onclick=()=>{
-  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-  const head=["Classe","Équipe","Match","Date","Adversaire","Observateurs","Joueur","Présent","Touches de disque",
-    "Participation équipe %",...CONFIG.compteurs.map(c=>c.titre),...CONFIG.esprit.map(e=>"Esprit - "+e.titre),
-    ...CONFIG.entraide.map(x=>"Entraide - "+x),"Points (info)","Jeu collectif %","Esprit du jeu %","Entraide %","Global %","Niveau"];
-  const rows=[];
-  D.teams.forEach(t=>t.matchs.forEach((m,i)=>{
-    if(!started(m)) return;
-    const s=scores(t,m);
-    const common=[Math.round(s.participation),...CONFIG.compteurs.map(c=>m.cpt[c.id]),...CONFIG.esprit.map(e=>m.esprit[e.id]??""),
-      ...CONFIG.entraide.map((x,k)=>m.entraide[k]!==undefined?FREQ[m.entraide[k]]:""),m.pts,
-      Math.round(s.collectif),Math.round(s.esprit),Math.round(s.entraide),Math.round(s.global),complete(m)?niv(s.global).nom:"incomplet"];
-    t.joueurs.forEach(p=>{ const abs=m.absents.includes(p);
-      rows.push([t.classe,t.nom,i+1,m.date,m.adv,m.obs,p,abs?"non":"oui",abs?"":(m.touches[p]||0),...common].map(q).join(";")) });
-  }));
-  if(!rows.length){ toast("Aucun match rempli à exporter"); return }
-  const blob=new Blob(["\ufeff"+[head.map(q).join(";"),...rows].join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-  a.download=`ultimate_equipes_${today()}.csv`; document.body.appendChild(a); a.click(); a.remove();
-};
-
-build();
-if(D.tab!=="syn" && !M().date) M().date=today();
-render();
+/* ===================== DÉMARRAGE ===================== */
+if(ROLE==="prof") initProf();
+else if(ROLE==="tablette1") initTablette(1);
+else if(ROLE==="tablette2") initTablette(2);
+else renderHome();
 </script>
 </body>
 </html>
