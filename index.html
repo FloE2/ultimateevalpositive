@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Ultimate 5e · Fiche d'équipe</title>
 <meta name="theme-color" content="#F2F4F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,6 +42,8 @@ const FIREBASE_CONFIG = {
   }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,button,a,input,select{touch-action:manipulation}   /* empêche le zoom au double appui sur iPad */
+button{-webkit-user-select:none;user-select:none}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Barlow",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1000px;margin:0 auto;padding:16px 16px 60px}
 h1,h2,.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
@@ -139,13 +141,15 @@ details summary{cursor:pointer;font-weight:600;margin-top:10px}
 .pres button{padding:10px 14px;border-radius:99px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
 .pres button.abs{border-color:var(--line);background:var(--bg);color:var(--muted);text-decoration:line-through}
 .touch{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-.tp{position:relative;border:2px solid var(--line);border-radius:14px;padding:16px 8px 12px;text-align:center;cursor:pointer;user-select:none;background:var(--bg)}
-.tp:active{transform:scale(.96)}
-.tp b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tp .n{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums}
+.touch{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.tp{border:2px solid var(--line);border-radius:14px;padding:10px;text-align:center;user-select:none;-webkit-user-select:none;background:var(--bg)}
+.tp b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:1.05rem}
+.tp .ctl{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}
+.tp .n{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:40px}
 .tp.low{border-color:var(--warn);background:var(--warn-soft)}
 .tp.ok{border-color:var(--accent);background:var(--accent-soft)}
-.tp .m{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:8px;border:0;background:var(--line);color:var(--ink);font-weight:800;cursor:pointer}
+.tp .cbtn{width:52px;height:52px}
+.tp .cbtn:active,.cbtn:active{transform:scale(.92)}
 .counter{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
 .counter:first-child{border-top:0}
 .counter .txt{flex:1}
@@ -605,9 +609,12 @@ function renderTab(useLocal){
   <div class="phase p2"><span class="ico">2</span><h3>Pendant le match</h3></div>
   <section class="card">
     <h2 style="font-size:1.3rem">Tout le monde joue ?</h2>
-    <p class="hint">Touchez le prénom <b>chaque fois que le joueur reçoit le disque</b>. Le − corrige une erreur.</p>
+    <p class="hint">Appuyez sur <b>+</b> chaque fois que le joueur reçoit le disque. Le <b>−</b> corrige une erreur.</p>
     <div class="touch">${pres.map(j=>{ const n=f.touches[j.id]||0, cls=n>=CONFIG.touchesMini?"ok":n?"low":"";
-      return `<div class="tp ${cls}" data-act="tp" data-j="${j.id}"><button class="m" data-act="tm" data-j="${j.id}" aria-label="moins">−</button><b>${esc(j.nom)}</b><span class="n">${n}</span></div>`}).join("")}</div>
+      return `<div class="tp ${cls}"><b>${esc(j.nom)}</b><div class="ctl">
+        <button class="cbtn minus" data-act="tm" data-j="${j.id}" aria-label="moins pour ${esc(j.nom)}">−</button>
+        <span class="n">${n}</span>
+        <button class="cbtn plus" data-act="tp" data-j="${j.id}" aria-label="plus pour ${esc(j.nom)}">+</button></div></div>`}).join("")}</div>
     <p class="hint" style="margin:10px 0 0"><b>${ok}/${pres.length}</b> joueurs ont touché le disque au moins ${CONFIG.touchesMini} fois.</p>
   </section>
   <section class="card">
